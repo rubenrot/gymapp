@@ -15,26 +15,23 @@ export default function Layout({ children, currentView, onNavigate }) {
             <header style={{
                 background: 'var(--bg-secondary)',
                 borderBottom: '1px solid var(--border)',
-                padding: 'var(--spacing-lg)',
+                padding: '10px',
                 boxShadow: 'var(--shadow-md)',
                 position: 'sticky',
                 top: 0,
                 zIndex: 100
             }}>
                 <div className="container">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <img
                             src="/logo.png"
                             alt="Valhalla Logo"
                             style={{
-                                height: '45px',
-                                width: '45px',
+                                height: '100px',
+                                width: '100px',
                                 objectFit: 'contain'
                             }}
                         />
-                        <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>
-                            Valhalla
-                        </h1>
                     </div>
                 </div>
             </header>
