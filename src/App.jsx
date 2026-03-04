@@ -34,7 +34,7 @@ function App() {
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       e.preventDefault();
-      e.returnValue = '¿Seguro que quieres salir de GorilApp?';
+      e.returnValue = '¿Seguro que quieres salir de Valhalla?';
       return e.returnValue;
     };
 
@@ -85,7 +85,7 @@ function App() {
         gap: 'var(--spacing-lg)'
       }}>
         <div className="spinner"></div>
-        <p style={{ color: 'var(--text-secondary)' }}>Cargando GorilApp...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Cargando Valhalla...</p>
       </div>
     );
   }

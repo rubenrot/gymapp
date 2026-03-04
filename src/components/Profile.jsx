@@ -1,18 +1,39 @@
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Ruler } from 'lucide-react';
 import { exportData, importData, clearAllData, getDatabaseStats } from '../db/backup';
+
+const HEIGHT_KEY = 'userHeightCm';
 
 export default function Profile() {
     const [stats, setStats] = useState(null);
     const [message, setMessage] = useState('');
+    const [heightCm, setHeightCm] = useState(() => localStorage.getItem(HEIGHT_KEY) || '');
 
-    useEffect(() => {
-        loadStats();
-    }, []);
-
-    async function loadStats() {
+    const loadStats = async () => {
         const dbStats = await getDatabaseStats();
         setStats(dbStats);
+    };
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            loadStats();
+        }, 0);
+
+        return () => clearTimeout(timerId);
+    }, []);
+
+    function handleSaveHeight() {
+        const numericHeight = Number(heightCm);
+        if (!numericHeight || numericHeight < 120 || numericHeight > 230) {
+            setMessage('La altura debe estar entre 120 y 230 cm.');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        localStorage.setItem(HEIGHT_KEY, String(numericHeight));
+        setHeightCm(String(numericHeight));
+        setMessage('Altura guardada correctamente.');
+        setTimeout(() => setMessage(''), 3000);
     }
 
     async function handleExport() {
@@ -76,7 +97,7 @@ export default function Profile() {
             <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
                 <img
                     src="/logo.png"
-                    alt="GorilApp Logo"
+                    alt="Valhalla Logo"
                     style={{
                         height: '120px',
                         width: '120px',
@@ -84,7 +105,7 @@ export default function Profile() {
                         margin: '0 auto var(--spacing-md)'
                     }}
                 />
-                <h3 style={{ marginBottom: 'var(--spacing-sm)' }}>GorilApp</h3>
+                <h3 style={{ marginBottom: 'var(--spacing-sm)' }}>Valhalla</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xl)' }}>
                     Tu gymbro de entrenamiento
                 </p>
@@ -147,9 +168,39 @@ export default function Profile() {
                             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--primary)' }}>{stats.notes}</div>
                             <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Notas</div>
                         </div>
+                        <div style={{ background: 'var(--bg-input)', padding: 'var(--spacing-md)', borderRadius: 'var(--radius-md)', textAlign: 'center', gridColumn: '1 / -1' }}>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--primary)' }}>{stats.bodyMetrics}</div>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Registros de peso</div>
+                        </div>
                     </div>
                 </div>
             )}
+
+            {/* Height setting for BMI calculations */}
+            <div className="card" style={{ marginTop: 'var(--spacing-lg)' }}>
+                <h4 style={{ marginBottom: 'var(--spacing-md)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                    <Ruler size={20} />
+                    Altura para IMC
+                </h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--spacing-md)' }}>
+                    Se usa para calcular IMC en Progreso (peso corporal).
+                </p>
+                <div style={{ display: 'flex', gap: 'var(--spacing-sm)' }}>
+                    <input
+                        type="number"
+                        className="input"
+                        min="120"
+                        max="230"
+                        step="1"
+                        value={heightCm}
+                        onChange={(e) => setHeightCm(e.target.value)}
+                        placeholder="Ej: 178"
+                    />
+                    <button onClick={handleSaveHeight} className="btn btn-primary">
+                        Guardar
+                    </button>
+                </div>
+            </div>
 
             {/* Backup & Restore */}
             <div className="card" style={{ marginTop: 'var(--spacing-lg)' }}>

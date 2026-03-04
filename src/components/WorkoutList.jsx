@@ -10,11 +10,6 @@ export default function WorkoutList({ onSelectWorkout }) {
     const [lastSessions, setLastSessions] = useState({});
     const [pausedSession, setPausedSession] = useState(null);
 
-    useEffect(() => {
-        loadWorkouts();
-        loadPausedSession();
-    }, []);
-
     async function loadWorkouts() {
         const workoutList = await getWorkouts();
         setWorkouts(workoutList);
@@ -35,6 +30,11 @@ export default function WorkoutList({ onSelectWorkout }) {
         setPausedSession(saved);
     }
 
+    useEffect(() => {
+        loadWorkouts();
+        loadPausedSession();
+    }, []);
+
     function handleContinueSession() {
         if (pausedSession) {
             // Find the full workout object
@@ -52,9 +52,9 @@ export default function WorkoutList({ onSelectWorkout }) {
     }
 
     const workoutColors = [
-        'linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%)',
-        'linear-gradient(135deg, #F44336 0%, #D32F2F 100%)',
-        'linear-gradient(135deg, #C62828 0%, #8B0000 100%)'
+        'linear-gradient(180deg, #12332D 0%, #0F3D35 100%)',
+        'linear-gradient(180deg, #12332D 0%, #0D2622 100%)',
+        'linear-gradient(180deg, #0F3D35 0%, #12332D 100%)'
     ];
 
     return (
@@ -65,9 +65,9 @@ export default function WorkoutList({ onSelectWorkout }) {
             {pausedSession && (
                 <div className="card" style={{
                     marginBottom: 'var(--spacing-xl)',
-                    background: 'linear-gradient(135deg, #FF6B6B 0%, #D32F2F 100%)',
-                    border: '2px solid var(--primary)',
-                    color: 'white'
+                    background: 'linear-gradient(135deg, #0F3D35 0%, #12332D 100%)',
+                    border: '1px solid var(--border-light)',
+                    color: 'var(--text-main)'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-md)' }}>
                         <div style={{
@@ -97,8 +97,8 @@ export default function WorkoutList({ onSelectWorkout }) {
                             className="btn btn-lg"
                             style={{
                                 flex: 1,
-                                background: 'white',
-                                color: 'var(--primary)',
+                                background: 'var(--accent)',
+                                color: 'var(--text-on-accent)',
                                 fontWeight: 600
                             }}
                         >
@@ -109,8 +109,8 @@ export default function WorkoutList({ onSelectWorkout }) {
                             onClick={handleDiscardSession}
                             className="btn btn-lg"
                             style={{
-                                background: 'rgba(255, 255, 255, 0.2)',
-                                color: 'white'
+                                background: 'var(--bg-input)',
+                                color: 'var(--text-main)'
                             }}
                         >
                             <X size={20} />
@@ -130,8 +130,8 @@ export default function WorkoutList({ onSelectWorkout }) {
                             onClick={() => onSelectWorkout(workout)}
                             style={{
                                 background: workoutColors[index % workoutColors.length],
-                                border: 'none',
-                                color: 'white',
+                                border: '1px solid var(--border)',
+                                color: 'var(--text-main)',
                                 animationDelay: `${index * 100}ms`
                             }}
                         >

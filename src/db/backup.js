@@ -8,13 +8,14 @@ import { db } from './database';
 export async function exportData() {
     try {
         const data = {
-            version: 1,
+            version: 2,
             exportDate: new Date().toISOString(),
             workouts: await db.workouts.toArray(),
             exercises: await db.exercises.toArray(),
             sessions: await db.sessions.toArray(),
             sets: await db.sets.toArray(),
-            notes: await db.notes.toArray()
+            notes: await db.notes.toArray(),
+            bodyMetrics: await db.bodyMetrics.toArray()
         };
 
         const jsonString = JSON.stringify(data, null, 2);
@@ -47,9 +48,9 @@ export async function importData(file, clearExisting = false) {
         const text = await file.text();
         const data = JSON.parse(text);
 
-        // Validate data structure
+        // Validate minimum data structure (v1 compatible)
         if (!data.workouts || !data.exercises || !data.sessions || !data.sets || !data.notes) {
-            throw new Error('Archivo de backup inválido');
+            return { success: false, message: 'Archivo de backup invalido' };
         }
 
         // Clear existing data if requested
@@ -59,6 +60,7 @@ export async function importData(file, clearExisting = false) {
             await db.sessions.clear();
             await db.sets.clear();
             await db.notes.clear();
+            await db.bodyMetrics.clear();
         }
 
         // Import data
@@ -67,6 +69,16 @@ export async function importData(file, clearExisting = false) {
         await db.sessions.bulkAdd(data.sessions);
         await db.sets.bulkAdd(data.sets);
         await db.notes.bulkAdd(data.notes);
+
+        // bodyMetrics is optional to support old backups.
+        if (Array.isArray(data.bodyMetrics) && data.bodyMetrics.length > 0) {
+            const normalizedMetrics = data.bodyMetrics.map((metric) => ({
+                ...metric,
+                date: String(metric.date || '').slice(0, 10),
+                notes: metric.notes || metric.optionalNotes || ''
+            }));
+            await db.bodyMetrics.bulkAdd(normalizedMetrics);
+        }
 
         return {
             success: true,
@@ -89,6 +101,7 @@ export async function clearAllData() {
         await db.sessions.clear();
         await db.sets.clear();
         await db.notes.clear();
+        await db.bodyMetrics.clear();
 
         return { success: true, message: 'Todos los datos han sido eliminados' };
     } catch (error) {
@@ -103,15 +116,14 @@ export async function clearAllData() {
  */
 export async function getDatabaseStats() {
     try {
-        const stats = {
+        return {
             workouts: await db.workouts.count(),
             exercises: await db.exercises.count(),
             sessions: await db.sessions.count(),
             sets: await db.sets.count(),
-            notes: await db.notes.count()
+            notes: await db.notes.count(),
+            bodyMetrics: await db.bodyMetrics.count()
         };
-
-        return stats;
     } catch (error) {
         console.error('Error getting stats:', error);
         return null;

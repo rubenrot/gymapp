@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Dumbbell, Calendar, TrendingUp, User, Timer } from 'lucide-react';
 
 export default function Layout({ children, currentView, onNavigate }) {
@@ -14,7 +13,8 @@ export default function Layout({ children, currentView, onNavigate }) {
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Header */}
             <header style={{
-                background: 'var(--gradient-primary)',
+                background: 'var(--bg-secondary)',
+                borderBottom: '1px solid var(--border)',
                 padding: 'var(--spacing-lg)',
                 boxShadow: 'var(--shadow-md)',
                 position: 'sticky',
@@ -25,7 +25,7 @@ export default function Layout({ children, currentView, onNavigate }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
                         <img
                             src="/logo.png"
-                            alt="GorilApp Logo"
+                            alt="Valhalla Logo"
                             style={{
                                 height: '45px',
                                 width: '45px',
@@ -33,7 +33,7 @@ export default function Layout({ children, currentView, onNavigate }) {
                             }}
                         />
                         <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>
-                            GorilApp
+                            Valhalla
                         </h1>
                     </div>
                 </div>
@@ -50,7 +50,7 @@ export default function Layout({ children, currentView, onNavigate }) {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                background: 'var(--bg-card)',
+                background: 'var(--bg-secondary)',
                 borderTop: '1px solid var(--border)',
                 padding: 'var(--spacing-sm) 0',
                 boxShadow: '0 -4px 6px -1px rgba(0, 0, 0, 0.3)',
@@ -73,9 +73,9 @@ export default function Layout({ children, currentView, onNavigate }) {
                                 onClick={() => onNavigate(item.id)}
                                 className="btn-icon"
                                 style={{
-                                    background: isActive ? 'var(--gradient-primary)' : 'transparent',
-                                    color: isActive ? 'white' : 'var(--text-secondary)',
-                                    border: 'none',
+                                    background: isActive ? 'rgba(34, 211, 166, 0.15)' : 'transparent',
+                                    color: isActive ? 'var(--accent)' : 'var(--text-muted)',
+                                    border: isActive ? '1px solid var(--accent-dark)' : '1px solid transparent',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',

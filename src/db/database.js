@@ -10,6 +10,30 @@ db.version(3).stores({
   notes: '++id, exerciseId, note, date'
 });
 
+// Additive migration: keeps existing data and adds body weight tracking.
+db.version(4).stores({
+  workouts: '++id, name, day, order',
+  exercises: '++id, workoutId, name, sets, reps, rir, rest, order, exerciseDbId, gifUrl',
+  sessions: '++id, workoutId, date, duration, notes',
+  sets: '++id, sessionId, exerciseId, setNumber, weight, reps, rir, rpe, date',
+  notes: '++id, exerciseId, note, date',
+  bodyMetrics: '++id, date'
+});
+
+function toMetricDate(inputDate) {
+  if (!inputDate) return new Date().toISOString().slice(0, 10);
+  if (typeof inputDate === 'string') return inputDate.slice(0, 10);
+  return new Date(inputDate).toISOString().slice(0, 10);
+}
+
+function normalizeMetric(metric) {
+  return {
+    ...metric,
+    date: toMetricDate(metric.date),
+    notes: metric.notes || metric.optionalNotes || ''
+  };
+}
+
 // Initialize database with workout data
 export async function initializeDatabase() {
   const count = await db.workouts.count();
@@ -185,4 +209,63 @@ export async function getProgressData(exerciseId, days = 90) {
   return Object.values(progressByDate).sort((a, b) =>
     new Date(a.date) - new Date(b.date)
   );
+}
+
+export async function addBodyMetric({ date, weightKg, notes = '' }) {
+  const numericWeight = Number(weightKg);
+  if (!numericWeight || numericWeight <= 0) {
+    throw new Error('Peso invalido');
+  }
+
+  return await db.bodyMetrics.add({
+    date: toMetricDate(date),
+    weightKg: numericWeight,
+    notes: notes.trim()
+  });
+}
+
+export async function updateBodyMetric(id, updates) {
+  const payload = { ...updates };
+
+  if (payload.date) {
+    payload.date = toMetricDate(payload.date);
+  }
+
+  if (payload.weightKg !== undefined) {
+    const numericWeight = Number(payload.weightKg);
+    if (!numericWeight || numericWeight <= 0) {
+      throw new Error('Peso invalido');
+    }
+    payload.weightKg = numericWeight;
+  }
+
+  if (payload.notes !== undefined) {
+    payload.notes = (payload.notes || '').trim();
+  }
+
+  return await db.bodyMetrics.update(id, payload);
+}
+
+export async function getBodyMetrics(limit = 120) {
+  const rows = await db.bodyMetrics
+    .orderBy('date')
+    .reverse()
+    .limit(limit)
+    .toArray();
+
+  return rows.map(normalizeMetric);
+}
+
+export async function getLatestBodyMetric() {
+  const latest = await db.bodyMetrics
+    .orderBy('date')
+    .reverse()
+    .limit(1)
+    .toArray();
+
+  return latest.length > 0 ? normalizeMetric(latest[0]) : null;
+}
+
+export async function deleteBodyMetric(id) {
+  return await db.bodyMetrics.delete(id);
 }
