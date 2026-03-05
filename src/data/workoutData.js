@@ -1,15 +1,15 @@
 ﻿// Workout data imported from Excel
 export const workoutData = [
     {
-        name: 'DÃ­a 1 â€“ Empuje',
-        day: 'Pecho/Hombro/TrÃ­ceps',
+        name: 'Día 1 – Empuje',
+        day: 'Pecho/Hombro/Tríceps',
         order: 1,
         exercises: [
             {
                 name: 'Press banca plano',
                 sets: '4x4 / 5x3',
                 reps: '4-5',
-                rir: '2â†’1',
+                rir: '2→1',
                 rest: '3-4 min',
                 order: 1,
                 exerciseDbId: '0027',
@@ -20,7 +20,7 @@ export const workoutData = [
                 name: 'Press militar de pie',
                 sets: '4x5',
                 reps: '5',
-                rir: '2â†’1',
+                rir: '2→1',
                 rest: '3 min',
                 order: 2,
                 exerciseDbId: '0134',
@@ -28,10 +28,10 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Press inclinado mancuernas/mÃ¡quina',
+                name: 'Press inclinado mancuernas/máquina',
                 sets: '4x8-10',
                 reps: '8-10',
-                rir: '1â€“2',
+                rir: '1–2',
                 rest: '2 min',
                 order: 3,
                 exerciseDbId: '0314',
@@ -42,7 +42,7 @@ export const workoutData = [
                 name: 'Cruces en polea alta (crossover)',
                 sets: '3x12-15',
                 reps: '12-15',
-                rir: '0â€“1',
+                rir: '0–1',
                 rest: '90 s',
                 order: 4,
                 exerciseDbId: '0179',
@@ -53,7 +53,7 @@ export const workoutData = [
                 name: 'Elevaciones laterales',
                 sets: '4x12-15',
                 reps: '12-15',
-                rir: '0â€“1',
+                rir: '0–1',
                 rest: '90 s',
                 order: 5,
                 exerciseDbId: '0338',
@@ -61,7 +61,7 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'ExtensiÃ³n trÃ­ceps barra polea',
+                name: 'Extensión tríceps barra polea',
                 sets: '4x10-12',
                 reps: '10-12',
                 rir: '1',
@@ -72,10 +72,10 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'ExtensiÃ³n trÃ­ceps cuerda polea',
+                name: 'Extensión tríceps cuerda polea',
                 sets: '3x12-15',
                 reps: '12-15',
-                rir: '0â€“1',
+                rir: '0–1',
                 rest: '90 s',
                 order: 7,
                 exerciseDbId: '1452',
@@ -85,15 +85,15 @@ export const workoutData = [
         ]
     },
     {
-        name: 'DÃ­a 2 â€“ TirÃ³n',
-        day: 'Espalda/BÃ­ceps',
+        name: 'Día 2 – Tirón',
+        day: 'Espalda/Bíceps',
         order: 2,
         exercises: [
             {
                 name: 'Peso muerto',
                 sets: '4x4 / 5x3',
                 reps: '4-5',
-                rir: '2â†’1',
+                rir: '2→1',
                 rest: '3-4 min',
                 order: 1,
                 exerciseDbId: '0032',
@@ -104,15 +104,15 @@ export const workoutData = [
                 name: 'Dominadas estrictas',
                 sets: '5x3-4 / 6x2-3',
                 reps: '2-4',
-                rir: '1â€“2',
+                rir: '1–2',
                 rest: '3 min',
                 order: 2,
                 exerciseDbId: '3293',
                 gifUrl: 'exercises/dominadas.gif',
-                notes: 'TÃ©cnica / lastre'
+                notes: 'Técnica / lastre'
             },
             {
-                name: 'JalÃ³n polea alta supino',
+                name: 'Jalón polea alta supino',
                 sets: '3x10-12',
                 reps: '10-12',
                 rir: '1',
@@ -126,7 +126,7 @@ export const workoutData = [
                 name: 'Remo polea baja',
                 sets: '4x10-12',
                 reps: '10-12',
-                rir: '1â€“2',
+                rir: '1–2',
                 rest: '2-3 min',
                 order: 4,
                 exerciseDbId: '0207',
@@ -145,7 +145,7 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Curl bÃ­ceps polea baja (barra)',
+                name: 'Curl bíceps polea baja (barra)',
                 sets: '4x10-12',
                 reps: '10-12',
                 rir: '1',
@@ -159,7 +159,7 @@ export const workoutData = [
                 name: 'Curl inclinado mancuernas',
                 sets: '3x10-12',
                 reps: '10-12',
-                rir: '1â€“0',
+                rir: '1–0',
                 rest: '90 s',
                 order: 7,
                 exerciseDbId: '0298',
@@ -169,7 +169,7 @@ export const workoutData = [
         ]
     },
     {
-        name: 'DÃ­a 3 â€“ Pierna',
+        name: 'Día 3 – Pierna',
         day: 'Pierna + Brazos',
         order: 3,
         exercises: [
@@ -177,7 +177,7 @@ export const workoutData = [
                 name: 'Sentadilla trasera',
                 sets: '4x4 / 5x3',
                 reps: '4-5',
-                rir: '2â†’1',
+                rir: '2→1',
                 rest: '3-4 min',
                 order: 1,
                 exerciseDbId: '0043',
@@ -196,7 +196,7 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Curl femoral mÃ¡quina',
+                name: 'Curl femoral máquina',
                 sets: '4x10-12',
                 reps: '10-12',
                 rir: '1',
@@ -207,10 +207,10 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Extensiones de cuÃ¡driceps',
+                name: 'Extensiones de cuádriceps',
                 sets: '4x12-15',
                 reps: '12-15',
-                rir: '0â€“1',
+                rir: '0–1',
                 rest: '90s-2 min',
                 order: 4,
                 exerciseDbId: '1407',
@@ -221,7 +221,7 @@ export const workoutData = [
                 name: 'Walking lunges',
                 sets: '3x12-15/pierna',
                 reps: '12-15',
-                rir: '1â€“2',
+                rir: '1–2',
                 rest: '2-3 min',
                 order: 5,
                 exerciseDbId: '1490',
@@ -229,7 +229,7 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Curl bÃ­ceps polea alta',
+                name: 'Curl bíceps polea alta',
                 sets: '3x12-15',
                 reps: '12-15',
                 rir: '1',
@@ -240,7 +240,7 @@ export const workoutData = [
                 notes: ''
             },
             {
-                name: 'Press francÃ©s polea baja',
+                name: 'Press francés polea baja',
                 sets: '3x10-12',
                 reps: '10-12',
                 rir: '1',
@@ -254,7 +254,7 @@ export const workoutData = [
                 name: 'Elevaciones laterales',
                 sets: '4x12-15',
                 reps: '12-15',
-                rir: '0â€“1',
+                rir: '0–1',
                 rest: '90 s',
                 order: 8,
                 exerciseDbId: '0338',
