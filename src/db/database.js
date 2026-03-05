@@ -35,22 +35,48 @@ function normalizeMetric(metric) {
 }
 
 // Initialize database with workout data
-export async function initializeDatabase() {
+// Bump this version every time workoutData.js changes.
+const WORKOUT_DATA_VERSION = 3;
+const WD_VERSION_KEY = 'workoutDataVersion';
+const EXPECTED_WORKOUT_COUNT = 4; // number of routines in workoutData.js
+
+let _initPromise = null;
+
+export function initializeDatabase() {
+  // Singleton: always return the same promise so double-calls (React StrictMode) are harmless
+  if (!_initPromise) {
+    _initPromise = _doInit();
+  }
+  return _initPromise;
+}
+
+async function _doInit() {
+  const savedVersion = Number(localStorage.getItem(WD_VERSION_KEY) || 0);
   const count = await db.workouts.count();
 
-  if (count === 0) {
-    // Import workout data
-    const { workoutData } = await import('../data/workoutData');
+  // Re-seed when: first run, version bump, OR duplicate/corrupt data detected
+  if (count === 0 || savedVersion < WORKOUT_DATA_VERSION || count !== EXPECTED_WORKOUT_COUNT) {
+    localStorage.setItem(WD_VERSION_KEY, String(WORKOUT_DATA_VERSION));
+    await _clearAndSeed();
+    console.log(`Database (re)initialized with workout data v${WORKOUT_DATA_VERSION}`);
+  }
+}
 
-    // Insert workouts
+async function _clearAndSeed() {
+  const { workoutData } = await import('../data/workoutData');
+
+  await db.transaction('rw', db.workouts, db.exercises, async () => {
+    await db.exercises.clear();
+    await db.workouts.clear();
+
     for (const workout of workoutData) {
       const workoutId = await db.workouts.add({
         name: workout.name,
         day: workout.day,
-        order: workout.order
+        order: workout.order,
+        duration: workout.duration || ''
       });
 
-      // Insert exercises for this workout
       for (const exercise of workout.exercises) {
         await db.exercises.add({
           workoutId,
@@ -60,15 +86,21 @@ export async function initializeDatabase() {
           rir: exercise.rir,
           rest: exercise.rest,
           order: exercise.order,
+          block: exercise.block || '',
           exerciseDbId: exercise.exerciseDbId,
           gifUrl: exercise.gifUrl || '',
           notes: exercise.notes || ''
         });
       }
     }
+  });
+}
 
-    console.log('Database initialized with workout data');
-  }
+// Reset workout/exercise templates without losing session data
+export async function resetWorkoutTemplates() {
+  await _clearAndSeed();
+  localStorage.setItem(WD_VERSION_KEY, String(WORKOUT_DATA_VERSION));
+  console.log('Workout templates reset with new data');
 }
 
 // Helper functions

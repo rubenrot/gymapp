@@ -54,7 +54,8 @@ export default function WorkoutList({ onSelectWorkout }) {
     const workoutColors = [
         'linear-gradient(180deg, #12332D 0%, #0F3D35 100%)',
         'linear-gradient(180deg, #12332D 0%, #0D2622 100%)',
-        'linear-gradient(180deg, #0F3D35 0%, #12332D 100%)'
+        'linear-gradient(180deg, #0F3D35 0%, #12332D 100%)',
+        'linear-gradient(180deg, #0D2622 0%, #0F3D35 100%)'
     ];
 
     return (
@@ -142,6 +143,11 @@ export default function WorkoutList({ onSelectWorkout }) {
                                 <p style={{ opacity: 0.9, fontSize: '0.875rem', marginBottom: 0 }}>
                                     {workout.day}
                                 </p>
+                                {workout.duration && (
+                                    <p style={{ opacity: 0.7, fontSize: '0.75rem', marginBottom: 0, marginTop: '4px' }}>
+                                        ⏱ {workout.duration}
+                                    </p>
+                                )}
                             </div>
 
                             {lastSession && (

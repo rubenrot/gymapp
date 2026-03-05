@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database, Ruler } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Ruler, RefreshCw } from 'lucide-react';
 import { exportData, importData, clearAllData, getDatabaseStats } from '../db/backup';
+import { resetWorkoutTemplates } from '../db/database';
 
 const HEIGHT_KEY = 'userHeightCm';
 
@@ -62,6 +63,26 @@ export default function Profile() {
 
         // Reset file input
         event.target.value = '';
+    }
+
+    async function handleResetWorkouts() {
+        const ok = window.confirm(
+            '⚠️ Esto recargará las rutinas y ejercicios predefinidos.\n\n' +
+            'Tu historial de sesiones y series NO se borrará.\n\n' +
+            '¿Continuar?'
+        );
+        if (!ok) return;
+
+        try {
+            await resetWorkoutTemplates();
+            setMessage('✅ Rutinas actualizadas correctamente. Recarga la app.');
+            setTimeout(() => setMessage(''), 5000);
+            loadStats();
+        } catch (error) {
+            console.error(error);
+            setMessage('Error al recargar rutinas.');
+            setTimeout(() => setMessage(''), 3000);
+        }
     }
 
     async function handleClearData() {
@@ -231,6 +252,20 @@ export default function Profile() {
                             style={{ display: 'none' }}
                         />
                     </label>
+
+                    {/* Reset Workout Templates */}
+                    <button
+                        onClick={handleResetWorkouts}
+                        className="btn"
+                        style={{
+                            width: '100%',
+                            background: 'var(--accent-deep, #0F766E)',
+                            color: 'var(--text-main, white)'
+                        }}
+                    >
+                        <RefreshCw size={20} />
+                        Recargar Rutinas
+                    </button>
 
                     {/* Clear Data Button */}
                     <button

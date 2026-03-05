@@ -89,6 +89,9 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                     </h2>
                     <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 0 }}>
                         {workout.day}
+                        {workout.duration && (
+                            <span style={{ marginLeft: '12px', opacity: 0.8 }}>⏱ {workout.duration}</span>
+                        )}
                     </p>
                 </div>
             </div>
@@ -125,12 +128,32 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                    {exercises.map((exercise, index) => (
-                        <div
-                            key={exercise.id}
-                            className="card animate-slideInRight"
-                            style={{ animationDelay: `${index * 50}ms`, position: 'relative', paddingRight: '50px' }}
-                        >
+                    {exercises.map((exercise, index) => {
+                        const showBlockHeader = exercise.block &&
+                            (index === 0 || exercises[index - 1].block !== exercise.block);
+
+                        return (
+                            <div key={exercise.id}>
+                                {showBlockHeader && (
+                                    <div style={{
+                                        padding: 'var(--spacing-sm) var(--spacing-md)',
+                                        marginBottom: 'var(--spacing-sm)',
+                                        marginTop: index > 0 ? 'var(--spacing-md)' : 0,
+                                        background: 'var(--surface-2, rgba(255,255,255,0.05))',
+                                        borderRadius: 'var(--radius-md)',
+                                        borderLeft: '3px solid var(--accent, #22D3A6)',
+                                        fontSize: '0.875rem',
+                                        fontWeight: 600,
+                                        color: 'var(--accent, var(--text-primary))',
+                                        letterSpacing: '0.02em'
+                                    }}>
+                                        🔹 {exercise.block}
+                                    </div>
+                                )}
+                                <div
+                                    className="card animate-slideInRight"
+                                    style={{ animationDelay: `${index * 50}ms`, position: 'relative', paddingRight: '50px' }}
+                                >
                             {/* Action Buttons */}
                             <div style={{
                                 position: 'absolute',
@@ -277,7 +300,9 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        </div>
+                        );
+                    })}
                 </div>
 
                 {/* Add Exercise Button */}

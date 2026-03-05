@@ -1,31 +1,37 @@
 // Mapeo de nombres de ejercicios en español a IDs de free-exercise-db
 export const exerciseImageMap = {
-    // Día 1 - Empuje
-    'Press banca plano': 'Barbell_Bench_Press',
-    'Press inclinado': 'Barbell_Incline_Bench_Press',
-    'Aperturas': 'Dumbbell_Flyes',
-    'Press militar de pie': 'Standing_Military_Press',
-    'Elevaciones laterales': 'Dumbbell_Lateral_Raise',
-    'Fondos en paralelas': 'Dips',
-    'Extensiones de tríceps': 'Dumbbell_Tricep_Extension',
+    // Día 1 – Pecho + Espalda
+    'Press banca con barra': 'Barbell_Bench_Press',
+    'Jalón cerrado neutro con inclinación': 'Wide_Grip_Lat_Pulldown',
+    'Press inclinado con barra': 'Barbell_Incline_Bench_Press',
+    'Remo aislado con mancuerna': 'One_Arm_Dumbbell_Row',
+    'Press en máquina': 'Barbell_Bench_Press',
+    'Remo horizontal en máquina': 'Barbell_Bent_Over_Row',
 
-    // Día 2 - Tirón
-    'Dominadas': 'Pull_Ups',
-    'Remo con barra': 'Barbell_Bent_Over_Row',
-    'Jalón al pecho': 'Wide_Grip_Lat_Pulldown',
-    'Remo con mancuerna': 'One_Arm_Dumbbell_Row',
-    'Face pulls': 'Face_Pull',
-    'Curl con barra': 'Barbell_Curl',
+    // Día 2 – Hombro + Bíceps + Tríceps
+    'Press militar neutro en máquina': 'Standing_Military_Press',
+    'Curl martillo con barra': 'Hammer_Curls',
+    'Remo superior mancuerna': 'Dumbbell_Lateral_Raise',
+    'Curl supinación cerrado barra Z': 'Barbell_Curl',
+    'Extensión vertical neutra en polea': 'Dumbbell_Tricep_Extension',
+    'Pájaros sentado mancuernas': 'Face_Pull',
+    'Curl concentrado mancuerna': 'Barbell_Curl',
+    'Patadas traseras mancuerna': 'Dumbbell_Tricep_Extension',
+
+    // Día 3 – Full Body Controlado
+    'Press máquina': 'Barbell_Bench_Press',
+    'Jalón neutro': 'Wide_Grip_Lat_Pulldown',
+    'Remo máquina': 'Barbell_Bent_Over_Row',
+    'Press neutro hombro': 'Standing_Military_Press',
     'Curl martillo': 'Hammer_Curls',
+    'Extensión polea': 'Dumbbell_Tricep_Extension',
 
-    // Día 3 - Pierna
-    'Sentadilla': 'Barbell_Full_Squat',
-    'Peso muerto': 'Barbell_Deadlift',
-    'Prensa': 'Leg_Press',
-    'Zancadas': 'Dumbbell_Lunges',
-    'Curl femoral': 'Lying_Leg_Curls',
-    'Extensiones de cuádriceps': 'Leg_Extensions',
-    'Elevaciones de gemelos': 'Standing_Calf_Raises'
+    // Día 4 – Cardio + Core
+    'Elíptica': null,
+    'Plancha frontal': null,
+    'Plancha lateral': null,
+    'Crunch controlado': null,
+    'Elevaciones de rodillas': null
 };
 
 /**

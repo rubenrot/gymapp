@@ -1,264 +1,339 @@
-﻿// Workout data imported from Excel
+﻿// Workout data – Rutinas personalizadas
 export const workoutData = [
     {
-        name: 'Día 1 – Empuje',
-        day: 'Pecho/Hombro/Tríceps',
+        name: 'Día 1 – Pecho + Espalda',
+        day: 'Pecho/Espalda',
         order: 1,
+        duration: '70-80 min',
         exercises: [
+            // Bloque 1 (fuerza)
             {
-                name: 'Press banca plano',
-                sets: '4x4 / 5x3',
-                reps: '4-5',
-                rir: '2→1',
-                rest: '3-4 min',
+                name: 'Press banca con barra',
+                sets: '4x6-8',
+                reps: '6-8',
+                rir: '',
+                rest: '90-120s',
                 order: 1,
+                block: 'Bloque 1 – Fuerza',
                 exerciseDbId: '0027',
-                gifUrl: 'exercises/press-banca-plano.gif',
+                gifUrl: '',
                 notes: ''
             },
             {
-                name: 'Press militar de pie',
-                sets: '4x5',
-                reps: '5',
-                rir: '2→1',
-                rest: '3 min',
+                name: 'Jalón cerrado neutro con inclinación',
+                sets: '4x6-8',
+                reps: '6-8',
+                rir: '',
+                rest: '90-120s',
                 order: 2,
-                exerciseDbId: '0134',
-                gifUrl: 'exercises/press-militar.gif',
+                block: 'Bloque 1 – Fuerza',
+                exerciseDbId: '0197',
+                gifUrl: '',
+                notes: ''
+            },
+            // Bloque 2 (volumen medio)
+            {
+                name: 'Press inclinado con barra',
+                sets: '3x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '75-90s',
+                order: 3,
+                block: 'Bloque 2 – Volumen medio',
+                exerciseDbId: '0314',
+                gifUrl: '',
                 notes: ''
             },
             {
-                name: 'Press inclinado mancuernas/máquina',
+                name: 'Remo aislado con mancuerna',
+                sets: '3x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '75-90s',
+                order: 4,
+                block: 'Bloque 2 – Volumen medio',
+                exerciseDbId: '0207',
+                gifUrl: '',
+                notes: 'Por lado'
+            },
+            // Bloque 3 (bombeo)
+            {
+                name: 'Press en máquina',
+                sets: '3x10-12',
+                reps: '10-12',
+                rir: '',
+                rest: '60-75s',
+                order: 5,
+                block: 'Bloque 3 – Bombeo',
+                exerciseDbId: '0027',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Remo horizontal en máquina',
+                sets: '3x10-12',
+                reps: '10-12',
+                rir: '',
+                rest: '60-75s',
+                order: 6,
+                block: 'Bloque 3 – Bombeo',
+                exerciseDbId: '0207',
+                gifUrl: '',
+                notes: ''
+            }
+        ]
+    },
+    {
+        name: 'Día 2 – Hombro + Bíceps + Tríceps',
+        day: 'Hombro/Bíceps/Tríceps',
+        order: 2,
+        duration: '70-75 min',
+        exercises: [
+            // Bloque 1 (principal – estabilidad + fuerza)
+            {
+                name: 'Press militar neutro en máquina',
                 sets: '4x8-10',
                 reps: '8-10',
-                rir: '1–2',
-                rest: '2 min',
-                order: 3,
-                exerciseDbId: '0314',
-                gifUrl: 'exercises/press-inclinado.gif',
-                notes: ''
-            },
-            {
-                name: 'Cruces en polea alta (crossover)',
-                sets: '3x12-15',
-                reps: '12-15',
-                rir: '0–1',
-                rest: '90 s',
-                order: 4,
-                exerciseDbId: '0179',
-                gifUrl: 'exercises/cruces-polea.gif',
-                notes: ''
-            },
-            {
-                name: 'Elevaciones laterales',
-                sets: '4x12-15',
-                reps: '12-15',
-                rir: '0–1',
-                rest: '90 s',
-                order: 5,
-                exerciseDbId: '0338',
-                gifUrl: 'exercises/elevaciones-laterales.gif',
-                notes: ''
-            },
-            {
-                name: 'Extensión tríceps barra polea',
-                sets: '4x10-12',
-                reps: '10-12',
-                rir: '1',
-                rest: '90 s',
-                order: 6,
-                exerciseDbId: '1451',
-                gifUrl: 'exercises/extension-triceps-barra.gif',
-                notes: ''
-            },
-            {
-                name: 'Extensión tríceps cuerda polea',
-                sets: '3x12-15',
-                reps: '12-15',
-                rir: '0–1',
-                rest: '90 s',
-                order: 7,
-                exerciseDbId: '1452',
-                gifUrl: 'exercises/extension-triceps-cuerda.gif',
-                notes: ''
-            }
-        ]
-    },
-    {
-        name: 'Día 2 – Tirón',
-        day: 'Espalda/Bíceps',
-        order: 2,
-        exercises: [
-            {
-                name: 'Peso muerto',
-                sets: '4x4 / 5x3',
-                reps: '4-5',
-                rir: '2→1',
-                rest: '3-4 min',
+                rir: '',
+                rest: '90s',
                 order: 1,
-                exerciseDbId: '0032',
-                gifUrl: 'exercises/peso-muerto.gif',
-                notes: ''
+                block: 'Bloque 1 – Estabilidad + Fuerza',
+                exerciseDbId: '0134',
+                gifUrl: '',
+                notes: 'Prioridad agarres neutros y control total'
             },
             {
-                name: 'Dominadas estrictas',
-                sets: '5x3-4 / 6x2-3',
-                reps: '2-4',
-                rir: '1–2',
-                rest: '3 min',
-                order: 2,
-                exerciseDbId: '3293',
-                gifUrl: 'exercises/dominadas.gif',
-                notes: 'Técnica / lastre'
-            },
-            {
-                name: 'Jalón polea alta supino',
-                sets: '3x10-12',
-                reps: '10-12',
-                rir: '1',
-                rest: '2 min',
-                order: 3,
-                exerciseDbId: '0197',
-                gifUrl: 'exercises/jalon-polea.gif',
-                notes: ''
-            },
-            {
-                name: 'Remo polea baja',
-                sets: '4x10-12',
-                reps: '10-12',
-                rir: '1–2',
-                rest: '2-3 min',
-                order: 4,
-                exerciseDbId: '0207',
-                gifUrl: 'exercises/remo-polea.gif',
-                notes: ''
-            },
-            {
-                name: 'Face pulls',
-                sets: '3x12-15',
-                reps: '12-15',
-                rir: '1',
-                rest: '90 s',
-                order: 5,
-                exerciseDbId: '0187',
-                gifUrl: 'exercises/face-pulls.gif',
-                notes: ''
-            },
-            {
-                name: 'Curl bíceps polea baja (barra)',
-                sets: '4x10-12',
-                reps: '10-12',
-                rir: '1',
-                rest: '2 min',
-                order: 6,
-                exerciseDbId: '0168',
-                gifUrl: 'exercises/curl-biceps-barra.gif',
-                notes: ''
-            },
-            {
-                name: 'Curl inclinado mancuernas',
-                sets: '3x10-12',
-                reps: '10-12',
-                rir: '1–0',
-                rest: '90 s',
-                order: 7,
-                exerciseDbId: '0298',
-                gifUrl: 'exercises/curl-inclinado.gif',
-                notes: ''
-            }
-        ]
-    },
-    {
-        name: 'Día 3 – Pierna',
-        day: 'Pierna + Brazos',
-        order: 3,
-        exercises: [
-            {
-                name: 'Sentadilla trasera',
-                sets: '4x4 / 5x3',
-                reps: '4-5',
-                rir: '2→1',
-                rest: '3-4 min',
-                order: 1,
-                exerciseDbId: '0043',
-                gifUrl: 'exercises/sentadilla.gif',
-                notes: 'Rodilla OK'
-            },
-            {
-                name: 'Prensa inclinada',
-                sets: '5x8-10',
+                name: 'Curl martillo con barra',
+                sets: '3-4x8-10',
                 reps: '8-10',
-                rir: '1',
-                rest: '2-3 min',
+                rir: '',
+                rest: '90s',
                 order: 2,
-                exerciseDbId: '1422',
-                gifUrl: 'exercises/prensa-inclinada.gif',
+                block: 'Bloque 1 – Estabilidad + Fuerza',
+                exerciseDbId: '0298',
+                gifUrl: '',
                 notes: ''
             },
+            // Bloque 2 (volumen medio)
             {
-                name: 'Curl femoral máquina',
-                sets: '4x10-12',
-                reps: '10-12',
-                rir: '1',
-                rest: '2 min',
-                order: 3,
-                exerciseDbId: '1615',
-                gifUrl: 'exercises/curl-femoral.gif',
-                notes: ''
-            },
-            {
-                name: 'Extensiones de cuádriceps',
-                sets: '4x12-15',
-                reps: '12-15',
-                rir: '0–1',
-                rest: '90s-2 min',
-                order: 4,
-                exerciseDbId: '1407',
-                gifUrl: 'exercises/extension-cuadriceps.gif',
-                notes: ''
-            },
-            {
-                name: 'Walking lunges',
-                sets: '3x12-15/pierna',
-                reps: '12-15',
-                rir: '1–2',
-                rest: '2-3 min',
-                order: 5,
-                exerciseDbId: '1490',
-                gifUrl: 'exercises/walking-lunges.gif',
-                notes: ''
-            },
-            {
-                name: 'Curl bíceps polea alta',
-                sets: '3x12-15',
-                reps: '12-15',
-                rir: '1',
-                rest: '90 s',
-                order: 6,
-                exerciseDbId: '0168',
-                gifUrl: 'exercises/curl-biceps-polea.gif',
-                notes: ''
-            },
-            {
-                name: 'Press francés polea baja',
+                name: 'Remo superior mancuerna',
                 sets: '3x10-12',
                 reps: '10-12',
-                rir: '1',
-                rest: '90 s',
-                order: 7,
-                exerciseDbId: '1451',
-                gifUrl: 'exercises/press-frances.gif',
+                rir: '',
+                rest: '75-90s',
+                order: 3,
+                block: 'Bloque 2 – Volumen medio',
+                exerciseDbId: '0338',
+                gifUrl: '',
+                notes: 'Trabajo deltoide medio/posterior'
+            },
+            {
+                name: 'Curl supinación cerrado barra Z',
+                sets: '3x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '75-90s',
+                order: 4,
+                block: 'Bloque 2 – Volumen medio',
+                exerciseDbId: '0168',
+                gifUrl: '',
                 notes: ''
             },
             {
-                name: 'Elevaciones laterales',
-                sets: '4x12-15',
+                name: 'Extensión vertical neutra en polea',
+                sets: '3-4x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '75-90s',
+                order: 5,
+                block: 'Bloque 2 – Volumen medio',
+                exerciseDbId: '1451',
+                gifUrl: '',
+                notes: ''
+            },
+            // Bloque 3 (bombeo / control)
+            {
+                name: 'Pájaros sentado mancuernas',
+                sets: '3x12-15',
                 reps: '12-15',
-                rir: '0–1',
-                rest: '90 s',
+                rir: '',
+                rest: '60-75s',
+                order: 6,
+                block: 'Bloque 3 – Bombeo / Control',
+                exerciseDbId: '0187',
+                gifUrl: '',
+                notes: 'Mucho control, sin balanceos, protegiendo el hombro'
+            },
+            {
+                name: 'Curl concentrado mancuerna',
+                sets: '3x10-12',
+                reps: '10-12',
+                rir: '',
+                rest: '60-75s',
+                order: 7,
+                block: 'Bloque 3 – Bombeo / Control',
+                exerciseDbId: '0298',
+                gifUrl: '',
+                notes: 'Por brazo'
+            },
+            {
+                name: 'Patadas traseras mancuerna',
+                sets: '3x12-15',
+                reps: '12-15',
+                rir: '',
+                rest: '60-75s',
                 order: 8,
-                exerciseDbId: '0338',
-                gifUrl: 'exercises/elevaciones-laterales.gif',
+                block: 'Bloque 3 – Bombeo / Control',
+                exerciseDbId: '1452',
+                gifUrl: '',
+                notes: ''
+            }
+        ]
+    },
+    {
+        name: 'Día 3 – Full Body Controlado',
+        day: 'Full Body',
+        order: 3,
+        duration: '60 min',
+        exercises: [
+            {
+                name: 'Press máquina',
+                sets: '3x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '60-75s',
+                order: 1,
+                block: '',
+                exerciseDbId: '0027',
+                gifUrl: '',
+                notes: 'Día metabólico, menos pesado'
+            },
+            {
+                name: 'Jalón neutro',
+                sets: '3x8-10',
+                reps: '8-10',
+                rir: '',
+                rest: '60-75s',
+                order: 2,
+                block: '',
+                exerciseDbId: '0197',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Remo máquina',
+                sets: '3x10',
+                reps: '10',
+                rir: '',
+                rest: '60-75s',
+                order: 3,
+                block: '',
+                exerciseDbId: '0207',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Press neutro hombro',
+                sets: '3x10',
+                reps: '10',
+                rir: '',
+                rest: '60-75s',
+                order: 4,
+                block: '',
+                exerciseDbId: '0134',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Curl martillo',
+                sets: '3x10',
+                reps: '10',
+                rir: '',
+                rest: '60-75s',
+                order: 5,
+                block: '',
+                exerciseDbId: '0298',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Extensión polea',
+                sets: '3x10',
+                reps: '10',
+                rir: '',
+                rest: '60-75s',
+                order: 6,
+                block: '',
+                exerciseDbId: '1451',
+                gifUrl: '',
+                notes: ''
+            }
+        ]
+    },
+    {
+        name: 'Día 4 – Cardio + Core',
+        day: 'Cardio/Core',
+        order: 4,
+        duration: '40-50 min',
+        exercises: [
+            {
+                name: 'Elíptica',
+                sets: '1x25-30min',
+                reps: '25-30 min',
+                rir: '',
+                rest: '',
+                order: 1,
+                block: 'Cardio',
+                exerciseDbId: 'cardio-01',
+                gifUrl: '',
+                notes: 'Intervalos moderados'
+            },
+            {
+                name: 'Plancha frontal',
+                sets: '3x30-40s',
+                reps: '30-40s',
+                rir: '',
+                rest: '60s',
+                order: 2,
+                block: 'Core',
+                exerciseDbId: 'core-01',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Plancha lateral',
+                sets: '3x30s',
+                reps: '30s',
+                rir: '',
+                rest: '60s',
+                order: 3,
+                block: 'Core',
+                exerciseDbId: 'core-02',
+                gifUrl: '',
+                notes: 'Por lado'
+            },
+            {
+                name: 'Crunch controlado',
+                sets: '3x15',
+                reps: '15',
+                rir: '',
+                rest: '60s',
+                order: 4,
+                block: 'Core',
+                exerciseDbId: 'core-03',
+                gifUrl: '',
+                notes: ''
+            },
+            {
+                name: 'Elevaciones de rodillas',
+                sets: '3x12',
+                reps: '12',
+                rir: '',
+                rest: '60s',
+                order: 5,
+                block: 'Core',
+                exerciseDbId: 'core-04',
+                gifUrl: '',
                 notes: ''
             }
         ]
