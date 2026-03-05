@@ -4,36 +4,69 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/gym/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: ['favicon.ico', 'logo.png', 'assets/icons/*.webp', 'assets/sounds/*.mp3'],
       manifest: {
-        name: 'GorilApp',
-        short_name: 'GorilApp',
-        description: 'Tu compañero de entrenamiento en el gimnasio',
-        theme_color: '#D32F2F',
-        background_color: '#0D0D0D',
+        name: 'Valhalla - Dark Nordic Fitness',
+        short_name: 'Valhalla',
+        description: 'Dark Nordic fitness: entrenamiento y progreso',
+        theme_color: '#071A17',
+        background_color: '#071A17',
         display: 'standalone',
         orientation: 'portrait',
+        start_url: '/gym/',
+        scope: '/gym/',
         icons: [
           {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
+            src: 'assets/icons/icon-48.webp',
+            sizes: '48x48',
+            type: 'image/webp',
             purpose: 'any maskable'
           },
           {
-            src: '/icon-512.png',
+            src: 'assets/icons/icon-72.webp',
+            sizes: '72x72',
+            type: 'image/webp',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'assets/icons/icon-96.webp',
+            sizes: '96x96',
+            type: 'image/webp',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'assets/icons/icon-128.webp',
+            sizes: '128x128',
+            type: 'image/webp',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'assets/icons/icon-192.webp',
+            sizes: '192x192',
+            type: 'image/webp',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'assets/icons/icon-256.webp',
+            sizes: '256x256',
+            type: 'image/webp',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'assets/icons/icon-512.webp',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/webp',
             purpose: 'any maskable'
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2,mp3}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

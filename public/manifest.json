@@ -1,11 +1,11 @@
 {
-  "name": "GorilApp",
-  "short_name": "GorilApp",
-  "description": "Tu compañero de entrenamiento en el gimnasio",
-  "start_url": "/",
+  "name": "Valhalla - Dark Nordic Fitness",
+  "short_name": "Valhalla",
+  "description": "Dark Nordic fitness: entrenamiento y progreso",
+  "start_url": "/gym/",
   "display": "standalone",
-  "background_color": "#0D0D0D",
-  "theme_color": "#D32F2F",
+  "background_color": "#071A17",
+  "theme_color": "#071A17",
   "orientation": "portrait",
   "icons": [
     {

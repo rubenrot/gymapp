@@ -33,12 +33,13 @@ async function loadSound(name, url) {
 
 // Preload sounds
 export async function preloadSounds() {
+    const base = import.meta.env.BASE_URL;
     await Promise.all([
-        loadSound('beep', '/assets/sounds/bip1.mp3'),
-        loadSound('countdown', '/assets/sounds/bip2.mp3'),
-        loadSound('long', '/assets/sounds/bip3.mp3'),
-        loadSound('start', '/assets/sounds/doublebip.mp3'), // Or use this for transition
-        loadSound('end', '/assets/sounds/doublebip.mp3')
+        loadSound('beep', `${base}assets/sounds/bip1.mp3`),
+        loadSound('countdown', `${base}assets/sounds/bip2.mp3`),
+        loadSound('long', `${base}assets/sounds/bip3.mp3`),
+        loadSound('start', `${base}assets/sounds/doublebip.mp3`),
+        loadSound('end', `${base}assets/sounds/doublebip.mp3`)
     ]);
 }
 

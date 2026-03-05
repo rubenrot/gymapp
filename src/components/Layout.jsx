@@ -24,7 +24,7 @@ export default function Layout({ children, currentView, onNavigate }) {
                 <div className="container">
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <img
-                            src="/logo.png"
+                            src={`${import.meta.env.BASE_URL}logo.png`}
                             alt="Valhalla Logo"
                             style={{
                                 height: '100px',

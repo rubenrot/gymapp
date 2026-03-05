@@ -96,7 +96,7 @@ export default function Profile() {
 
             <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
                 <img
-                    src="/logo.png"
+                    src={`${import.meta.env.BASE_URL}logo.png`}
                     alt="Valhalla Logo"
                     style={{
                         height: '120px',
