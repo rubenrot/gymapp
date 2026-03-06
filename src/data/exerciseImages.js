@@ -63,3 +63,49 @@ export function getExerciseImages(exerciseName) {
         `${baseUrl}/${exerciseId}/1.jpg`
     ];
 }
+
+// Mapeo de nombres de ejercicios a GIFs animados (URLs directas)
+// Fuentes: fitcron.com, musclewiki, etc.
+const exerciseGifMap = {
+    // Día 1 – Pecho + Espalda
+    'Press banca con barra': 'https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',
+    'Jalón cerrado neutro con inclinación': 'https://fitcron.com/wp-content/uploads/2021/04/02131301-Cable-Seated-High-Row-V-bar_Back_720.gif',
+    'Press inclinado con barra': 'https://fitcron.com/wp-content/uploads/2021/03/00471301-Barbell-Incline-Bench-Press_Chest_720.gif',
+    'Remo aislado con mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/02921301-Dumbbell-Bent-over-Row_back_Back_720.gif',
+    'Press en máquina': 'https://fitcron.com/wp-content/uploads/2021/03/22771301-Lever-Chest-Press-VERSION-4_Chest_720.gif',
+    'Remo horizontal en máquina': 'https://fitcron.com/wp-content/uploads/2021/04/26641301-Lever-Seated-Row-plate-loaded_Back_720.gif',
+
+    // Día 2 – Hombro + Bíceps + Tríceps
+    'Press militar neutro en máquina': null,
+    'Curl martillo con barra': null,
+    'Remo superior mancuerna': null,
+    'Curl supinación cerrado barra Z': null,
+    'Extensión vertical neutra en polea': null,
+    'Pájaros sentado mancuernas': null,
+    'Curl concentrado mancuerna': null,
+    'Patadas traseras mancuerna': null,
+
+    // Día 3 – Full Body Controlado
+    'Press máquina': 'https://fitcron.com/wp-content/uploads/2021/03/22771301-Lever-Chest-Press-VERSION-4_Chest_720.gif',
+    'Jalón neutro': null,
+    'Remo máquina': 'https://fitcron.com/wp-content/uploads/2021/04/26641301-Lever-Seated-Row-plate-loaded_Back_720.gif',
+    'Press neutro hombro': null,
+    'Curl martillo': null,
+    'Extensión polea': null,
+
+    // Día 4 – Cardio + Core
+    'Plancha frontal': null,
+    'Plancha lateral': null,
+    'Crunch controlado': null,
+    'Elevaciones de rodillas': null,
+};
+
+/**
+ * Get exercise GIF URL
+ * @param {string} exerciseName - Name of exercise in Spanish
+ * @returns {string|null} GIF URL or null if not available
+ */
+export function getExerciseGifUrl(exerciseName) {
+    return exerciseGifMap[exerciseName] || null;
+}
+

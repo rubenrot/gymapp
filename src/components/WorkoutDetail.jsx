@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2, X, Dumbbell, History } from 'lucide-react';
 import { getExercisesByWorkout, getSetsByExercise, addExercise, updateExercise, deleteExercise } from '../db/database';
 import ExerciseModal from './ExerciseModal';
 import AppModal from './AppModal';
+import { getExerciseGifUrl } from '../data/exerciseImages';
 
 export default function WorkoutDetail({ workout, onBack, onStartSession }) {
     const [exercises, setExercises] = useState([]);
@@ -11,6 +12,17 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
     const [editingExercise, setEditingExercise] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [errorMsg, setErrorMsg] = useState('');
+    const [detailExercise, setDetailExercise] = useState(null);
+    const [detailHistory, setDetailHistory] = useState([]);
+    const [gifError, setGifError] = useState(false);
+
+    useEffect(() => {
+        if (!detailExercise) return;
+        setGifError(false);
+        const handleKey = (e) => { if (e.key === 'Escape') setDetailExercise(null); };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [detailExercise]);
 
     useEffect(() => {
         loadExercises();
@@ -50,6 +62,12 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
         await deleteExercise(deleteTarget.id);
         setDeleteTarget(null);
         loadExercises();
+    };
+
+    const handleExerciseDetail = async (exercise) => {
+        setDetailExercise(exercise);
+        const sets = await getSetsByExercise(exercise.id, 20);
+        setDetailHistory(sets);
     };
 
     const handleSaveExercise = async (data) => {
@@ -215,7 +233,10 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                 alignItems: 'flex-start',
                                 marginBottom: 'var(--spacing-md)'
                             }}>
-                                <div style={{ flex: 1, paddingRight: '40px' }}>
+                                <div
+                                    onClick={() => handleExerciseDetail(exercise)}
+                                    style={{ flex: 1, paddingRight: '40px', cursor: 'pointer' }}
+                                >
                                     <h4 style={{
                                         fontSize: '1.125rem',
                                         marginBottom: 'var(--spacing-xs)',
@@ -367,6 +388,247 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 message={errorMsg}
                 hideCancel
             />
+
+            {/* Exercise Detail Modal */}
+            {detailExercise && (
+                <div
+                    onClick={() => setDetailExercise(null)}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        backdropFilter: 'blur(4px)',
+                        zIndex: 2000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 'var(--spacing-md)'
+                    }}
+                >
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        className="animate-slideUp"
+                        style={{
+                            background: 'var(--surface-1, var(--bg-card))',
+                            border: '1px solid var(--border)',
+                            borderRadius: 'var(--radius-xl)',
+                            padding: 'var(--spacing-xl)',
+                            maxWidth: '440px',
+                            width: '100%',
+                            maxHeight: '85vh',
+                            overflowY: 'auto',
+                            position: 'relative'
+                        }}
+                    >
+                        {/* Close */}
+                        <button
+                            onClick={() => setDetailExercise(null)}
+                            style={{
+                                position: 'absolute',
+                                top: '12px',
+                                right: '12px',
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-muted)',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <X size={20} />
+                        </button>
+
+                        {/* Header */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-md)',
+                            marginBottom: 'var(--spacing-lg)'
+                        }}>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                borderRadius: '50%',
+                                background: 'rgba(34, 211, 166, 0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0
+                            }}>
+                                <Dumbbell size={24} style={{ color: 'var(--accent, #22D3A6)' }} />
+                            </div>
+                            <h3 style={{ margin: 0 }}>{detailExercise.name}</h3>
+                        </div>
+
+                        {/* Exercise GIF / Image */}
+                        {(() => {
+                            const gifUrl = getExerciseGifUrl(detailExercise.name);
+                            if (gifUrl && !gifError) {
+                                return (
+                                    <div style={{
+                                        borderRadius: 'var(--radius-md)',
+                                        overflow: 'hidden',
+                                        marginBottom: 'var(--spacing-lg)',
+                                        background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                        border: '1px solid var(--border)'
+                                    }}>
+                                        <img
+                                            src={gifUrl}
+                                            alt={detailExercise.name}
+                                            onError={() => setGifError(true)}
+                                            style={{
+                                                width: '100%',
+                                                height: 'auto',
+                                                display: 'block',
+                                                maxHeight: '280px',
+                                                objectFit: 'contain',
+                                                background: '#1a1a2e'
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            }
+                            return (
+                                <div style={{
+                                    borderRadius: 'var(--radius-md)',
+                                    overflow: 'hidden',
+                                    marginBottom: 'var(--spacing-lg)',
+                                    background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                    border: '1px dashed var(--border)',
+                                    padding: 'var(--spacing-xl)',
+                                    textAlign: 'center'
+                                }}>
+                                    <div style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-sm)' }}>🏋️</div>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0 }}>
+                                        GIF del ejercicio próximamente
+                                    </p>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Exercise Info */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: 'var(--spacing-sm)',
+                            padding: 'var(--spacing-md)',
+                            background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                            borderRadius: 'var(--radius-md)',
+                            marginBottom: 'var(--spacing-lg)'
+                        }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Series</div>
+                                <div style={{ fontSize: '1.125rem', fontWeight: 700 }}>{detailExercise.sets}</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Reps</div>
+                                <div style={{ fontSize: '1.125rem', fontWeight: 700 }}>{detailExercise.reps}</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Descanso</div>
+                                <div style={{ fontSize: '1.125rem', fontWeight: 700 }}>{detailExercise.rest}</div>
+                            </div>
+                        </div>
+
+                        {detailExercise.rir && (
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                borderRadius: 'var(--radius-md)',
+                                marginBottom: 'var(--spacing-lg)',
+                                fontSize: '0.875rem'
+                            }}>
+                                <span style={{ color: 'var(--text-muted)' }}>RIR objetivo</span>
+                                <span style={{ fontWeight: 600 }}>{detailExercise.rir}</span>
+                            </div>
+                        )}
+
+                        {detailExercise.block && (
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                borderRadius: 'var(--radius-md)',
+                                marginBottom: 'var(--spacing-lg)',
+                                fontSize: '0.875rem'
+                            }}>
+                                <span style={{ color: 'var(--text-muted)' }}>Bloque</span>
+                                <span style={{ fontWeight: 600 }}>{detailExercise.block}</span>
+                            </div>
+                        )}
+
+                        {detailExercise.notes && (
+                            <div style={{
+                                padding: 'var(--spacing-md)',
+                                background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                borderRadius: 'var(--radius-md)',
+                                marginBottom: 'var(--spacing-lg)',
+                                fontSize: '0.875rem',
+                                fontStyle: 'italic',
+                                color: 'var(--text-secondary)'
+                            }}>
+                                📝 {detailExercise.notes}
+                            </div>
+                        )}
+
+                        {/* History */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--spacing-sm)',
+                            marginBottom: 'var(--spacing-md)'
+                        }}>
+                            <History size={18} style={{ color: 'var(--text-muted)' }} />
+                            <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Últimas series</h4>
+                        </div>
+
+                        {detailHistory.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                                {detailHistory.map((set, i) => (
+                                    <div
+                                        key={set.id || i}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: 'var(--spacing-sm) var(--spacing-md)',
+                                            background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                            borderRadius: 'var(--radius-md)',
+                                            fontSize: '0.85rem'
+                                        }}
+                                    >
+                                        <span style={{ color: 'var(--text-muted)', minWidth: '70px' }}>
+                                            {new Date(set.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                        </span>
+                                        <span style={{ fontWeight: 600 }}>
+                                            {set.weight} kg × {set.reps} reps
+                                        </span>
+                                        {set.rpe && (
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                                RPE {set.rpe}
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{
+                                textAlign: 'center',
+                                color: 'var(--text-muted)',
+                                fontSize: '0.85rem',
+                                padding: 'var(--spacing-lg) 0'
+                            }}>
+                                Sin historial todavía. ¡Empieza una sesión!
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
