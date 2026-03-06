@@ -21,7 +21,7 @@ export default function SessionTracker({ workout, onClose }) {
     const [sessionId, setSessionId] = useState(null);
     const [weight, setWeight] = useState('');
     const [rpe, setRpe] = useState(null); // RPE 1-5 scale
-    const [exercisePhase, setExercisePhase] = useState('input'); // 'input', 'executing', 'rpe'
+    const [exercisePhase, setExercisePhase] = useState('input'); // 'input', 'executing', 'doing', 'rpe'
     const [sessionSets, setSessionSets] = useState({});
     const [showTimer, setShowTimer] = useState(false);
     const [timerDuration, setTimerDuration] = useState(90);
@@ -107,12 +107,20 @@ export default function SessionTracker({ workout, onClose }) {
     }
 
     function parseRestTime(restString) {
-        // Parse rest time like "90 s", "2 min", "3-4 min"
-        if (restString.includes('90')) return 90;
-        if (restString.includes('2')) return 120;
-        if (restString.includes('3')) return 180;
-        if (restString.includes('4')) return 240;
-        return 90;
+        if (!restString) return 60;
+        // Match patterns like "90-120s", "75-90s", "60-75s", "90s", "2 min", "3-4 min"
+        const rangeMatch = restString.match(/(\d+)\s*[-–]\s*(\d+)\s*s/i);
+        if (rangeMatch) {
+            // Use the average of the range in seconds
+            return Math.round((parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2);
+        }
+        const singleSecMatch = restString.match(/(\d+)\s*s/i);
+        if (singleSecMatch) return parseInt(singleSecMatch[1]);
+        const minMatch = restString.match(/(\d+)\s*min/i);
+        if (minMatch) return parseInt(minMatch[1]) * 60;
+        // Fallback: extract first number
+        const num = restString.match(/(\d+)/);
+        return num ? parseInt(num[1]) : 60;
     }
 
     // NEW WORKFLOW: Start all 5 sets for current exercise
@@ -127,20 +135,23 @@ export default function SessionTracker({ workout, onClose }) {
         setShowPrepTimer(true);
     }
 
-    // Called when PrepTimer completes - user does the set, then RestTimer starts automatically
+    // Called when PrepTimer completes - user must now do the set
     function handlePrepTimerComplete() {
         setShowPrepTimer(false);
+        setExercisePhase('doing');
+    }
 
+    // Called when user confirms they finished the set
+    function handleSetDone() {
         const exercise = exercises[currentExerciseIndex];
         const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
 
-        // After a short delay (user does the set), start rest timer automatically
-        // For now, start rest timer immediately - user will do set during rest
         if (currentSetNumber < totalSets) {
-            // Start rest timer for next set
+            // Start rest timer before next set
             const restSeconds = parseRestTime(exercise.rest);
             setTimerDuration(restSeconds);
             setShowTimer(true);
+            setExercisePhase('executing');
         } else {
             // All sets done, move to RPE phase
             setExercisePhase('rpe');
@@ -243,15 +254,24 @@ export default function SessionTracker({ workout, onClose }) {
 
     function handlePreviousExercise() {
         if (currentExerciseIndex > 0) {
+            setShowTimer(false);
+            setShowPrepTimer(false);
             setCurrentExerciseIndex(prev => prev - 1);
             setCurrentSetNumber(1);
+            setExercisePhase('input');
+            setRpe(null);
         }
     }
 
     function handleNextExercise() {
         if (currentExerciseIndex < exercises.length - 1) {
+            setShowTimer(false);
+            setShowPrepTimer(false);
             setCurrentExerciseIndex(prev => prev + 1);
             setCurrentSetNumber(1);
+            setExercisePhase('input');
+            setWeight('');
+            setRpe(null);
         }
     }
 
@@ -259,11 +279,24 @@ export default function SessionTracker({ workout, onClose }) {
         const exercise = exercises[currentExerciseIndex];
         const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
 
+        // Close any active timer/prep overlay
+        setShowTimer(false);
+        setShowPrepTimer(false);
+
         if (currentSetNumber < totalSets) {
+            // Skip to next set of same exercise
             setCurrentSetNumber(prev => prev + 1);
+            setExercisePhase('doing');
         } else if (currentExerciseIndex < exercises.length - 1) {
+            // Last set of this exercise → skip to next exercise
             setCurrentExerciseIndex(prev => prev + 1);
             setCurrentSetNumber(1);
+            setExercisePhase('input');
+            setWeight('');
+            setRpe(null);
+        } else {
+            // Last set of last exercise → complete workout
+            completeSession();
         }
     }
 
@@ -478,8 +511,61 @@ export default function SessionTracker({ workout, onClose }) {
                         </div>
 
                         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                            Los timers te guiarán automáticamente
+                            Esperando timer de descanso...
                         </p>
+                    </div>
+                )}
+
+                {exercisePhase === 'doing' && (
+                    <div className="card" style={{ marginBottom: 'var(--spacing-xl)', textAlign: 'center' }}>
+                        <h3 style={{ marginBottom: 'var(--spacing-sm)' }}>
+                            💪 ¡Haz tu serie!
+                        </h3>
+                        <p style={{
+                            fontSize: '1.125rem',
+                            color: 'var(--text-secondary)',
+                            marginBottom: 'var(--spacing-md)'
+                        }}>
+                            Serie {currentSetNumber} / {totalSets}
+                        </p>
+                        <p style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--primary)', marginBottom: 'var(--spacing-xs)' }}>
+                            {weight} kg
+                        </p>
+                        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xl)' }}>
+                            {currentExercise.reps} reps
+                        </p>
+
+                        {/* Progress indicator */}
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-xl)' }}>
+                            {Array.from({ length: totalSets }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '50%',
+                                        background: i < currentSetNumber - 1 ? 'var(--success)' : i === currentSetNumber - 1 ? 'var(--primary)' : 'var(--bg-input)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 600,
+                                        color: i <= currentSetNumber - 1 ? 'white' : 'var(--text-muted)',
+                                        transition: 'all 0.3s ease'
+                                    }}
+                                >
+                                    {i < currentSetNumber - 1 ? '✓' : i + 1}
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={handleSetDone}
+                            className="btn btn-success btn-lg"
+                            style={{ width: '100%', fontSize: '1.125rem' }}
+                        >
+                            <Check size={24} />
+                            ✅ Serie hecha
+                        </button>
                     </div>
                 )}
 
