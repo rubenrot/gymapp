@@ -303,6 +303,22 @@ export default function SessionTracker({ workout, onClose }) {
         }
     }
 
+    function handleSkipExercise() {
+        setShowTimer(false);
+        setShowPrepTimer(false);
+
+        if (currentExerciseIndex < exercises.length - 1) {
+            setCurrentExerciseIndex(prev => prev + 1);
+            setCurrentSetNumber(1);
+            setExercisePhase('input');
+            setWeight('');
+            setRpe(null);
+        } else {
+            // Last exercise → complete workout
+            completeSession();
+        }
+    }
+
     if (exercises.length === 0) {
         return <div className="container" style={{ padding: 'var(--spacing-xl)' }}>
             <p>Cargando ejercicios...</p>
@@ -708,6 +724,14 @@ export default function SessionTracker({ workout, onClose }) {
                     style={{ width: '100%' }}
                 >
                     Saltar Serie
+                </button>
+
+                <button
+                    onClick={handleSkipExercise}
+                    className="btn btn-secondary"
+                    style={{ width: '100%', marginTop: 'var(--spacing-sm)', opacity: 0.7 }}
+                >
+                    Saltar Ejercicio
                 </button>
             </div>
 

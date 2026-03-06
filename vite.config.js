@@ -91,8 +91,10 @@ export default defineConfig({
     port: 3000,
     cors: true,
     hmr: {
-      clientPort: 3000,
-      host: 'gorilapp.duckdns.org'
+      protocol: 'ws',
+      host: 'gorilapp.duckdns.org',
+      port: 3000,
+      path: '/gym/'
     }
   }
 })
