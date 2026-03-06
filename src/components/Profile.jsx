@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Download, Upload, Trash2, Database, Ruler, RefreshCw } from 'lucide-react';
 import { exportData, importData, clearAllData, getDatabaseStats } from '../db/backup';
 import { resetWorkoutTemplates } from '../db/database';
+import AppModal from './AppModal';
 
 const HEIGHT_KEY = 'userHeightCm';
 
@@ -9,6 +10,11 @@ export default function Profile() {
     const [stats, setStats] = useState(null);
     const [message, setMessage] = useState('');
     const [heightCm, setHeightCm] = useState(() => localStorage.getItem(HEIGHT_KEY) || '');
+    const [pendingImportFile, setPendingImportFile] = useState(null);
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [showClearModal, setShowClearModal] = useState(false);
+    const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
     const loadStats = async () => {
         const dbStats = await getDatabaseStats();
@@ -46,33 +52,32 @@ export default function Profile() {
     async function handleImport(event) {
         const file = event.target.files[0];
         if (!file) return;
-
-        const confirmReplace = window.confirm(
-            '¿Quieres reemplazar todos los datos existentes?\n\n' +
-            'SÍ = Borra todo y carga el backup\n' +
-            'NO = Añade el backup a los datos actuales'
-        );
-
-        const result = await importData(file, confirmReplace);
-        setMessage(result.message);
-        setTimeout(() => setMessage(''), 3000);
-
-        if (result.success) {
-            loadStats();
-        }
-
+        setPendingImportFile(file);
+        setShowImportModal(true);
         // Reset file input
         event.target.value = '';
     }
 
-    async function handleResetWorkouts() {
-        const ok = window.confirm(
-            '⚠️ Esto recargará las rutinas y ejercicios predefinidos.\n\n' +
-            'Tu historial de sesiones y series NO se borrará.\n\n' +
-            '¿Continuar?'
-        );
-        if (!ok) return;
+    async function doImport(replace) {
+        setShowImportModal(false);
+        if (!pendingImportFile) return;
 
+        const result = await importData(pendingImportFile, replace);
+        setMessage(result.message);
+        setTimeout(() => setMessage(''), 3000);
+        setPendingImportFile(null);
+
+        if (result.success) {
+            loadStats();
+        }
+    }
+
+    async function handleResetWorkouts() {
+        setShowResetModal(true);
+    }
+
+    async function doResetWorkouts() {
+        setShowResetModal(false);
         try {
             await resetWorkoutTemplates();
             setMessage('✅ Rutinas actualizadas correctamente. Recarga la app.');
@@ -86,22 +91,16 @@ export default function Profile() {
     }
 
     async function handleClearData() {
-        const confirm = window.confirm(
-            '⚠️ ADVERTENCIA ⚠️\n\n' +
-            'Esto eliminará TODOS tus datos:\n' +
-            '- Historial de entrenamientos\n' +
-            '- Series registradas\n' +
-            '- Notas\n\n' +
-            '¿Estás seguro?\n\n' +
-            'Recomendación: Exporta un backup antes de continuar.'
-        );
+        setShowClearModal(true);
+    }
 
-        if (!confirm) return;
+    function handleClearFirstConfirm() {
+        setShowClearModal(false);
+        setShowClearConfirmModal(true);
+    }
 
-        const doubleConfirm = window.confirm('¿Estás COMPLETAMENTE seguro? Esta acción no se puede deshacer.');
-
-        if (!doubleConfirm) return;
-
+    async function doClearData() {
+        setShowClearConfirmModal(false);
         const result = await clearAllData();
         setMessage(result.message);
         setTimeout(() => setMessage(''), 3000);
@@ -297,6 +296,55 @@ export default function Profile() {
                     </div>
                 )}
             </div>
+
+            {/* Import Mode Modal */}
+            <AppModal
+                isOpen={showImportModal}
+                onClose={() => { setShowImportModal(false); setPendingImportFile(null); }}
+                type="confirm"
+                title="Importar datos"
+                message={'¿Quieres reemplazar todos los datos existentes?\n\n"Reemplazar" = Borra todo y carga el backup\n"Añadir" = Añade el backup a los datos actuales'}
+                confirmText="Reemplazar"
+                cancelText="Añadir"
+                onConfirm={() => doImport(true)}
+                onCancel={() => doImport(false)}
+            />
+
+            {/* Reset Workouts Modal */}
+            <AppModal
+                isOpen={showResetModal}
+                onClose={() => setShowResetModal(false)}
+                type="warning"
+                title="Recargar rutinas"
+                message={'Esto recargará las rutinas y ejercicios predefinidos.\n\nTu historial de sesiones y series NO se borrará.\n\n¿Continuar?'}
+                confirmText="Recargar"
+                onConfirm={doResetWorkouts}
+                onCancel={() => setShowResetModal(false)}
+            />
+
+            {/* Clear Data Modal – Step 1 */}
+            <AppModal
+                isOpen={showClearModal}
+                onClose={() => setShowClearModal(false)}
+                type="danger"
+                title="⚠️ Borrar todos los datos"
+                message={'Esto eliminará TODOS tus datos:\n• Historial de entrenamientos\n• Series registradas\n• Notas\n\n¿Estás seguro?\n\nRecomendación: Exporta un backup antes de continuar.'}
+                confirmText="Sí, continuar"
+                onConfirm={handleClearFirstConfirm}
+                onCancel={() => setShowClearModal(false)}
+            />
+
+            {/* Clear Data Modal – Step 2 (double confirm) */}
+            <AppModal
+                isOpen={showClearConfirmModal}
+                onClose={() => setShowClearConfirmModal(false)}
+                type="danger"
+                title="Confirmación final"
+                message="¿Estás COMPLETAMENTE seguro? Esta acción no se puede deshacer."
+                confirmText="Eliminar todo"
+                onConfirm={doClearData}
+                onCancel={() => setShowClearConfirmModal(false)}
+            />
         </div>
     );
 }

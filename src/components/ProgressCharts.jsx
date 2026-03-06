@@ -10,6 +10,7 @@ import {
     updateBodyMetric,
     deleteBodyMetric
 } from '../db/database';
+import AppModal from './AppModal';
 
 const HEIGHT_KEY = 'userHeightCm';
 
@@ -48,6 +49,7 @@ export default function ProgressCharts() {
         notes: ''
     });
     const [weightMessage, setWeightMessage] = useState('');
+    const [deleteMetricTarget, setDeleteMetricTarget] = useState(null);
 
     async function loadWorkouts() {
         const workoutList = await getWorkouts();
@@ -183,8 +185,13 @@ export default function ProgressCharts() {
     }
 
     async function handleDeleteMetric(metricId) {
-        if (!window.confirm('¿Eliminar este registro de peso?')) return;
-        await deleteBodyMetric(metricId);
+        setDeleteMetricTarget(metricId);
+    }
+
+    async function doDeleteMetric() {
+        if (!deleteMetricTarget) return;
+        await deleteBodyMetric(deleteMetricTarget);
+        setDeleteMetricTarget(null);
         await loadBodyMetrics();
     }
 
@@ -481,6 +488,17 @@ export default function ProgressCharts() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Weight Record Modal */}
+            <AppModal
+                isOpen={!!deleteMetricTarget}
+                onClose={() => setDeleteMetricTarget(null)}
+                type="danger"
+                title="Eliminar registro"
+                message="¿Eliminar este registro de peso? Esta acción no se puede deshacer."
+                onConfirm={doDeleteMetric}
+                onCancel={() => setDeleteMetricTarget(null)}
+            />
         </div>
     );
 }

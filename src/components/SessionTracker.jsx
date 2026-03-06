@@ -13,6 +13,7 @@ import PrepTimer from './PrepTimer';
 import { requestWakeLock, releaseWakeLock } from '../utils/wakeLock';
 import { saveSession, clearSession } from '../utils/sessionStorage';
 import { getExerciseImageUrl } from '../data/exerciseImages';
+import AppModal from './AppModal';
 
 export default function SessionTracker({ workout, onClose }) {
     const [exercises, setExercises] = useState([]);
@@ -30,6 +31,8 @@ export default function SessionTracker({ workout, onClose }) {
     const [lastWeights, setLastWeights] = useState({});
     const [startTime] = useState(Date.now());
     const [imageError, setImageError] = useState(false);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [sessionDuration, setSessionDuration] = useState(0);
 
     useEffect(() => {
         initSession();
@@ -223,9 +226,9 @@ export default function SessionTracker({ workout, onClose }) {
         // Clear saved session
         clearSession();
 
-        // Show completion message
-        alert('¡Sesión completada! 💪');
-        onClose();
+        // Show completion modal
+        setSessionDuration(duration);
+        setShowCompleteModal(true);
     }
 
     function handlePauseSession() {
@@ -734,6 +737,18 @@ export default function SessionTracker({ workout, onClose }) {
                     onClose={() => setShowNotes(false)}
                 />
             )}
+
+            {/* Session Complete Modal */}
+            <AppModal
+                isOpen={showCompleteModal}
+                onClose={onClose}
+                type="success"
+                title="¡Sesión completada! 💪"
+                message={`Has terminado ${workout.name} en ${sessionDuration} minutos.\n\n¡Gran trabajo, guerrero!`}
+                confirmText="Cerrar"
+                onConfirm={onClose}
+                hideCancel
+            />
         </div>
     );
 }

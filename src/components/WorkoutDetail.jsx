@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2 } from 'lucide-react';
 import { getExercisesByWorkout, getSetsByExercise, addExercise, updateExercise, deleteExercise } from '../db/database';
 import ExerciseModal from './ExerciseModal';
+import AppModal from './AppModal';
 
 export default function WorkoutDetail({ workout, onBack, onStartSession }) {
     const [exercises, setExercises] = useState([]);
     const [lastWeights, setLastWeights] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingExercise, setEditingExercise] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
         loadExercises();
@@ -38,11 +41,15 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
         setIsModalOpen(true);
     };
 
-    const handleDeleteClick = async (exerciseId) => {
-        if (window.confirm('¿Seguro que quieres eliminar este ejercicio?')) {
-            await deleteExercise(exerciseId);
-            loadExercises();
-        }
+    const handleDeleteClick = (exercise) => {
+        setDeleteTarget(exercise);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return;
+        await deleteExercise(deleteTarget.id);
+        setDeleteTarget(null);
+        loadExercises();
     };
 
     const handleSaveExercise = async (data) => {
@@ -59,7 +66,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
             loadExercises();
         } catch (error) {
             console.error('Error saving exercise:', error);
-            alert('Error al guardar el ejercicio');
+            setErrorMsg('Error al guardar el ejercicio');
         }
     };
 
@@ -154,46 +161,53 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                     className="card animate-slideInRight"
                                     style={{ animationDelay: `${index * 50}ms`, position: 'relative', paddingRight: '50px' }}
                                 >
-                            {/* Action Buttons */}
-                            <div style={{
-                                position: 'absolute',
-                                top: 'var(--spacing-md)',
-                                right: 'var(--spacing-md)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 'var(--spacing-xs)'
-                            }}>
-                                <button
-                                    onClick={() => handleEditClick(exercise)}
-                                    className="btn-icon"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        background: 'rgba(255, 255, 255, 0.1)',
-                                        color: 'white',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    <Pencil size={16} />
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteClick(exercise.id)}
-                                    className="btn-icon"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        background: 'rgba(244, 67, 54, 0.2)',
-                                        color: '#ff4444',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
+                            {/* Edit Button – top right */}
+                            <button
+                                onClick={() => handleEditClick(exercise)}
+                                className="btn-icon"
+                                style={{
+                                    position: 'absolute',
+                                    top: 'var(--spacing-sm)',
+                                    right: 'var(--spacing-sm)',
+                                    width: '28px',
+                                    height: '28px',
+                                    background: 'transparent',
+                                    color: 'var(--text-muted)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: 0,
+                                    border: 'none',
+                                    opacity: 0.6,
+                                    transition: 'opacity 0.2s'
+                                }}
+                            >
+                                <Pencil size={14} />
+                            </button>
+
+                            {/* Delete Button – bottom right */}
+                            <button
+                                onClick={() => handleDeleteClick(exercise)}
+                                className="btn-icon"
+                                style={{
+                                    position: 'absolute',
+                                    bottom: 'var(--spacing-sm)',
+                                    right: 'var(--spacing-sm)',
+                                    width: '28px',
+                                    height: '28px',
+                                    background: 'transparent',
+                                    color: 'var(--danger, #EF4444)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    padding: 0,
+                                    border: 'none',
+                                    opacity: 0.5,
+                                    transition: 'opacity 0.2s'
+                                }}
+                            >
+                                <Trash2 size={14} />
+                            </button>
 
                             <div style={{
                                 display: 'flex',
@@ -331,6 +345,27 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSaveExercise}
                 initialData={editingExercise}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <AppModal
+                isOpen={!!deleteTarget}
+                onClose={() => setDeleteTarget(null)}
+                type="danger"
+                title="Eliminar ejercicio"
+                message={deleteTarget ? `¿Seguro que quieres eliminar "${deleteTarget.name}"?\nEsta acción no se puede deshacer.` : ''}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
+
+            {/* Error Modal */}
+            <AppModal
+                isOpen={!!errorMsg}
+                onClose={() => setErrorMsg('')}
+                type="error"
+                title="Error"
+                message={errorMsg}
+                hideCancel
             />
         </div>
     );
