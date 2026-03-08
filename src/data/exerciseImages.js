@@ -76,22 +76,38 @@ const exerciseGifMap = {
     'Remo horizontal en máquina': 'https://fitcron.com/wp-content/uploads/2021/04/26641301-Lever-Seated-Row-plate-loaded_Back_720.gif',
 
     // Día 2 – Hombro + Bíceps + Tríceps
-    'Press militar neutro en máquina': null,
-    'Curl martillo con barra': null,
-    'Remo superior mancuerna': null,
-    'Curl supinación cerrado barra Z': null,
-    'Extensión vertical neutra en polea': null,
-    'Pájaros sentado mancuernas': null,
-    'Curl concentrado mancuerna': null,
-    'Patadas traseras mancuerna': null,
+    'Press militar neutro en máquina': 'https://fitcron.com/wp-content/uploads/2021/04/29621301-Lever-Seated-Hammer-Grip-Shoulder-Press_Shoulder_720.gif',
+    'Curl martillo con barra': 'https://fitcron.com/wp-content/uploads/2021/04/06361301-Olympic-Barbell-Hammer-Curl_Forearms_720.gif',
+    'Remo superior mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/03771301-Dumbbell-Rear-Delt-Row_shoulder_720.gif',
+    'Curl supinación cerrado barra Z': 'https://fitcron.com/wp-content/uploads/2021/04/16271301-EZ-Barbell-Close-Grip-Preacher-Curl_Upper-Arms-FIX_720.gif',
+    'Extensión vertical neutra en polea': 'https://fitcron.com/wp-content/uploads/2021/04/12271301-Cable-Standing-One-Arm-Tricep-Pushdown-Overhand-Grip_Upper-Arms_720.gif',
+    'Pájaros sentado mancuernas': 'https://fitcron.com/wp-content/uploads/2021/04/03781301-Dumbbell-Rear-Fly_Shoulders_720.gif',
+    'Curl concentrado mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/02971301-Dumbbell-Concentration-Curl_Upper-Arms_720.gif',
+    'Patadas traseras mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/03331301-Dumbbell-Kickback_Upper-Arms_720.gif',
+
+    // Ejercicios adicionales – Hombro
+    'Press militar en pronación en máquina': 'https://fitcron.com/wp-content/uploads/2021/04/14541103-Lever-Seated-Shoulder-Press_Shoulders_720.gif',
+    'Press militar inclinado neutro en máquina': 'https://fitcron.com/wp-content/uploads/2021/04/11951301-Lever-Incline-Hammer-Chest-Press_Chest_720.gif',
+    'Elevaciones frontales en pronación con mancuernas': 'https://fitcron.com/wp-content/uploads/2021/04/03101301-Dumbbell-Front-Raise_Shoulders_720.gif',
+    'Remo superior aislado con mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/03771301-Dumbbell-Rear-Delt-Row_shoulder_720.gif',
+
+    // Ejercicios adicionales – Bíceps
+    'Curl concentrado en supinación con mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/02971301-Dumbbell-Concentration-Curl_Upper-Arms_720.gif',
+    'Curl en supinación cerrado con barra Z': 'https://fitcron.com/wp-content/uploads/2021/04/16271301-EZ-Barbell-Close-Grip-Preacher-Curl_Upper-Arms-FIX_720.gif',
+    'Curl en martillo con barra': 'https://fitcron.com/wp-content/uploads/2021/04/06361301-Olympic-Barbell-Hammer-Curl_Forearms_720.gif',
+
+    // Ejercicios adicionales – Tríceps
+    'Extensión horizontal con barra Z': 'https://fitcron.com/wp-content/uploads/2021/03/17481301-EZ-Bar-Lying-Close-Grip-Triceps-Extension-Behind-Head_Upper-Arms_720.gif',
+    'Extensión vertical con mancuerna': 'https://fitcron.com/wp-content/uploads/2021/04/21881301-Dumbbell-Seated-Triceps-Extension_Upper-Arms_720.gif',
+    'Patadas traseras con mancuernas': 'https://fitcron.com/wp-content/uploads/2021/04/03331301-Dumbbell-Kickback_Upper-Arms_720.gif',
 
     // Día 3 – Full Body Controlado
     'Press máquina': 'https://fitcron.com/wp-content/uploads/2021/03/22771301-Lever-Chest-Press-VERSION-4_Chest_720.gif',
-    'Jalón neutro': null,
+    'Jalón neutro': 'https://fitcron.com/wp-content/uploads/2021/04/02131301-Cable-Seated-High-Row-V-bar_Back_720.gif',
     'Remo máquina': 'https://fitcron.com/wp-content/uploads/2021/04/26641301-Lever-Seated-Row-plate-loaded_Back_720.gif',
-    'Press neutro hombro': null,
-    'Curl martillo': null,
-    'Extensión polea': null,
+    'Press neutro hombro': 'https://fitcron.com/wp-content/uploads/2021/04/29621301-Lever-Seated-Hammer-Grip-Shoulder-Press_Shoulder_720.gif',
+    'Curl martillo': 'https://fitcron.com/wp-content/uploads/2021/04/06361301-Olympic-Barbell-Hammer-Curl_Forearms_720.gif',
+    'Extensión polea': 'https://fitcron.com/wp-content/uploads/2021/04/12271301-Cable-Standing-One-Arm-Tricep-Pushdown-Overhand-Grip_Upper-Arms_720.gif',
 
     // Día 4 – Cardio + Core
     'Plancha frontal': null,
