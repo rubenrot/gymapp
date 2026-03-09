@@ -423,7 +423,7 @@ export default function ProgressCharts() {
                                             <button onClick={() => openEditWeightModal(metric)} className="btn-icon" style={{ background: 'rgba(255,255,255,0.12)', color: 'white' }} title="Editar">
                                                 <Pencil size={16} />
                                             </button>
-                                            <button onClick={() => handleDeleteMetric(metric.id)} className="btn-icon" style={{ background: 'rgba(244, 67, 54, 0.2)', color: '#ff4444' }} title="Eliminar">
+                                            <button onClick={() => handleDeleteMetric(metric.id)} className="btn-icon" style={{ background: 'rgba(227, 75, 75, 0.2)', color: 'var(--danger)' }} title="Eliminar">
                                                 <Trash2 size={16} />
                                             </button>
                                         </div>

@@ -4,8 +4,8 @@
   "description": "Dark Nordic fitness: entrenamiento y progreso",
   "start_url": "/gym/",
   "display": "standalone",
-  "background_color": "#071A17",
-  "theme_color": "#071A17",
+  "background_color": "#050507",
+  "theme_color": "#050507",
   "orientation": "portrait",
   "icons": [
     {

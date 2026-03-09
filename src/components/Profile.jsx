@@ -258,7 +258,7 @@ export default function Profile() {
                         className="btn"
                         style={{
                             width: '100%',
-                            background: 'var(--accent-deep, #0F766E)',
+                            background: 'var(--accent-deep, #7A6317)',
                             color: 'var(--text-main, white)'
                         }}
                     >

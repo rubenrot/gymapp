@@ -166,7 +166,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                         marginTop: index > 0 ? 'var(--spacing-md)' : 0,
                                         background: 'var(--surface-2, rgba(255,255,255,0.05))',
                                         borderRadius: 'var(--radius-md)',
-                                        borderLeft: '3px solid var(--accent, #22D3A6)',
+                                        borderLeft: '3px solid var(--accent, #C9A227)',
                                         fontSize: '0.875rem',
                                         fontWeight: 600,
                                         color: 'var(--accent, var(--text-primary))',
@@ -214,7 +214,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                     width: '28px',
                                     height: '28px',
                                     background: 'transparent',
-                                    color: 'var(--danger, #EF4444)',
+                                    color: 'var(--danger, #E34B4B)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -451,13 +451,13 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                 width: '48px',
                                 height: '48px',
                                 borderRadius: '50%',
-                                background: 'rgba(34, 211, 166, 0.15)',
+                                background: 'rgba(201, 162, 39, 0.15)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 flexShrink: 0
                             }}>
-                                <Dumbbell size={24} style={{ color: 'var(--accent, #22D3A6)' }} />
+                                <Dumbbell size={24} style={{ color: 'var(--accent, #C9A227)' }} />
                             </div>
                             <h3 style={{ margin: 0 }}>{detailExercise.name}</h3>
                         </div>
@@ -484,7 +484,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                                 display: 'block',
                                                 maxHeight: '280px',
                                                 objectFit: 'contain',
-                                                background: '#1a1a2e'
+                                                background: '#14171B'
                                             }}
                                         />
                                     </div>
