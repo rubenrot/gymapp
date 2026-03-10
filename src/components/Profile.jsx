@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database, Ruler, RefreshCw } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Ruler, RefreshCw, Palette } from 'lucide-react';
 import { exportData, importData, clearAllData, getDatabaseStats } from '../db/backup';
 import { resetWorkoutTemplates } from '../db/database';
+import { THEMES, getTheme, setTheme } from '../utils/theme';
 import AppModal from './AppModal';
 
 const HEIGHT_KEY = 'userHeightCm';
@@ -15,6 +16,7 @@ export default function Profile() {
     const [showResetModal, setShowResetModal] = useState(false);
     const [showClearModal, setShowClearModal] = useState(false);
     const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState(getTheme);
 
     const loadStats = async () => {
         const dbStats = await getDatabaseStats();
@@ -219,6 +221,75 @@ export default function Profile() {
                     <button onClick={handleSaveHeight} className="btn btn-primary">
                         Guardar
                     </button>
+                </div>
+            </div>
+
+            {/* Theme Selector */}
+            <div className="card" style={{ marginTop: 'var(--spacing-lg)' }}>
+                <h4 style={{ marginBottom: 'var(--spacing-md)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                    <Palette size={20} />
+                    Tema de la App
+                </h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--spacing-md)' }}>
+                    Selecciona la paleta de colores de la interfaz.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                    {Object.values(THEMES).map((theme) => (
+                        <button
+                            key={theme.id}
+                            onClick={() => { setTheme(theme.id); setCurrentTheme(theme.id); }}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--spacing-md)',
+                                padding: 'var(--spacing-md)',
+                                background: currentTheme === theme.id ? 'var(--bg-input)' : 'transparent',
+                                border: currentTheme === theme.id
+                                    ? '2px solid var(--accent)'
+                                    : '1px solid var(--border)',
+                                borderRadius: 'var(--radius-lg)',
+                                cursor: 'pointer',
+                                color: 'var(--text-primary)',
+                                textAlign: 'left',
+                                transition: 'all var(--transition-base)',
+                                width: '100%',
+                            }}
+                        >
+                            {/* Color preview circles */}
+                            <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                                {theme.preview.map((color, i) => (
+                                    <div
+                                        key={i}
+                                        style={{
+                                            width: '24px',
+                                            height: '24px',
+                                            borderRadius: '50%',
+                                            background: color,
+                                            border: '1px solid rgba(255,255,255,0.15)',
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                                    {theme.name}
+                                    {currentTheme === theme.id && (
+                                        <span style={{
+                                            marginLeft: '8px',
+                                            fontSize: '0.75rem',
+                                            color: 'var(--accent)',
+                                            fontWeight: 700,
+                                        }}>
+                                            ✓ Activo
+                                        </span>
+                                    )}
+                                </div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                    {theme.description}
+                                </div>
+                            </div>
+                        </button>
+                    ))}
                 </div>
             </div>
 

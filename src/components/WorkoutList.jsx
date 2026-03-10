@@ -52,10 +52,10 @@ export default function WorkoutList({ onSelectWorkout }) {
     }
 
     const workoutColors = [
-        'linear-gradient(180deg, #1C1F24 0%, #262A30 100%)',
-        'linear-gradient(180deg, #1C1F24 0%, #0D0F12 100%)',
-        'linear-gradient(180deg, #262A30 0%, #1C1F24 100%)',
-        'linear-gradient(180deg, #0D0F12 0%, #262A30 100%)'
+        'linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%)',
+        'linear-gradient(180deg, var(--surface-1) 0%, var(--bg-secondary) 100%)',
+        'linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%)',
+        'linear-gradient(180deg, var(--bg-secondary) 0%, var(--surface-2) 100%)'
     ];
 
     return (
@@ -66,7 +66,7 @@ export default function WorkoutList({ onSelectWorkout }) {
             {pausedSession && (
                 <div className="card" style={{
                     marginBottom: 'var(--spacing-xl)',
-                    background: 'linear-gradient(135deg, #262A30 0%, #1C1F24 100%)',
+                    background: 'linear-gradient(135deg, var(--surface-2) 0%, var(--surface-1) 100%)',
                     border: '1px solid var(--border-light)',
                     color: 'var(--text-main)'
                 }}>

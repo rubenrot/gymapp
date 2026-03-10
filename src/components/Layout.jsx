@@ -70,7 +70,7 @@ export default function Layout({ children, currentView, onNavigate }) {
                                 onClick={() => onNavigate(item.id)}
                                 className="btn-icon"
                                 style={{
-                                    background: isActive ? 'rgb(36, 40, 43)' : 'transparent',
+                                    background: isActive ? 'var(--surface-1)' : 'transparent',
                                     color: isActive ? 'var(--accent)' : 'var(--text-muted)',
                                     border: isActive ? '1px solid var(--accent-dark)' : '1px solid transparent',
                                     display: 'flex',

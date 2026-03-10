@@ -9,6 +9,7 @@ import ProgressCharts from './components/ProgressCharts';
 import Profile from './components/Profile';
 import TimerModule from './components/TimerModule';
 import { initializeDatabase } from './db/database';
+import { applyTheme } from './utils/theme';
 import './index.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
 
   useEffect(() => {
     async function init() {
+      applyTheme();
       await initializeDatabase();
       try {
         await KeepAwake.keepAwake();
