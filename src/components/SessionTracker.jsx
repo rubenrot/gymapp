@@ -402,7 +402,8 @@ export default function SessionTracker({ workout, onClose }) {
                     borderRadius: 'var(--radius-xl)',
                     marginBottom: 'var(--spacing-xl)',
                     overflow: 'hidden',
-                    border: '1px solid var(--border)'
+                    border: '1px solid var(--border)',
+                    padding: '12px 0'
                 }}>
                     {(() => {
                         const exerciseGifUrl = getExerciseGifUrl(currentExercise.name);
@@ -414,12 +415,14 @@ export default function SessionTracker({ workout, onClose }) {
                                     alt={currentExercise.name}
                                     onError={() => setGifError(true)}
                                     style={{
-                                        width: '100%',
+                                        maxWidth: '250px',
+                                        maxHeight: '250px',
+                                        width: 'auto',
                                         height: 'auto',
                                         display: 'block',
-                                        minHeight: '250px',
-                                        objectFit: 'cover',
-                                        background: '#ffffff'
+                                        margin: '0 auto',
+                                        objectFit: 'contain',
+                                        borderRadius: '12px'
                                     }}
                                 />
                             );

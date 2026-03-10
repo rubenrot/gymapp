@@ -140,7 +140,7 @@ export default function AmrapTimer({ onBack }) {
 
     if (showCountdown) {
         return <CountdownStart
-            duration={10}
+            duration={5}
             onComplete={handleCountdownComplete}
             onCancel={() => {
                 setShowCountdown(false);

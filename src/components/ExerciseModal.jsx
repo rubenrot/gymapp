@@ -84,12 +84,12 @@ export default function ExerciseModal({ isOpen, onClose, onSave, initialData }) 
                         <div className="form-group">
                             <label>Series</label>
                             <input
-                                type="number"
+                                type="text"
                                 name="sets"
                                 value={formData.sets}
                                 onChange={handleChange}
                                 className="input"
-                                min="1"
+                                placeholder="4"
                                 required
                             />
                         </div>

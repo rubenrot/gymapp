@@ -186,7 +186,7 @@ export default function TabataTimer({ onBack }) {
 
     if (showCountdown) {
         return <CountdownStart
-            duration={10}
+            duration={5}
             onComplete={handleCountdownComplete}
             onCancel={() => {
                 setShowCountdown(false);

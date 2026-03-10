@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play, SkipForward } from 'lucide-react';
 
 export default function PrepTimer({ setNumber, totalSets, onComplete, onSkip }) {
-    const [timeLeft, setTimeLeft] = useState(10); // 10 seconds prep time
+    const [timeLeft, setTimeLeft] = useState(5); // 5 seconds prep time
     const [isActive, setIsActive] = useState(true);
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export default function PrepTimer({ setNumber, totalSets, onComplete, onSkip }) 
         }
     }
 
-    const progress = ((10 - timeLeft) / 10) * 100;
+    const progress = ((5 - timeLeft) / 5) * 100;
 
     return (
         <div style={{

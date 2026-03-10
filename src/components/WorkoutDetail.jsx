@@ -205,7 +205,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                             width: '28px',
                                             height: '28px',
                                             background: 'transparent',
-                                            color: 'var(--text-muted)',
+                                            color: '#33F1C2',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -229,7 +229,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                             width: '28px',
                                             height: '28px',
                                             background: 'transparent',
-                                            color: 'var(--danger, #E34B4B)',
+                                            color: '#DC2626',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
@@ -292,16 +292,18 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
 
                                     <div style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gridTemplateColumns: 'repeat(4, 1fr)',
                                         gap: 'var(--spacing-sm)',
                                         padding: 'var(--spacing-md)',
                                         background: 'var(--bg-input)',
-                                        borderRadius: 'var(--radius-md)'
+                                        borderRadius: 'var(--radius-md)',
+                                        textAlign: 'center'
                                     }}>
                                         <div>
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
+                                                justifyContent: 'center',
                                                 gap: '4px',
                                                 color: 'var(--text-muted)',
                                                 fontSize: '0.75rem',
@@ -319,6 +321,25 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '4px',
+                                                color: 'var(--text-muted)',
+                                                fontSize: '0.75rem',
+                                                marginBottom: '4px'
+                                            }}>
+                                                <Repeat size={14} />
+                                                <span>Rep.</span>
+                                            </div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                {exercise.reps || '—'}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
                                                 gap: '4px',
                                                 color: 'var(--text-muted)',
                                                 fontSize: '0.75rem',
@@ -328,7 +349,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                                 <span>RIR</span>
                                             </div>
                                             <div style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                                {exercise.rir}
+                                                {exercise.rir || '—'}
                                             </div>
                                         </div>
 
@@ -336,6 +357,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                             <div style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
+                                                justifyContent: 'center',
                                                 gap: '4px',
                                                 color: 'var(--text-muted)',
                                                 fontSize: '0.75rem',
@@ -537,23 +559,26 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                             if (gifUrl && !gifError) {
                                 return (
                                     <div style={{
-                                        borderRadius: 'var(--radius-md)',
+                                        borderRadius: 'var(--radius-lg, 16px)',
                                         overflow: 'hidden',
                                         marginBottom: 'var(--spacing-lg)',
                                         background: '#ffffff',
-                                        border: '1px solid var(--border)'
+                                        border: '1px solid var(--border)',
+                                        padding: '12px 0'
                                     }}>
                                         <img
                                             src={gifUrl}
                                             alt={detailExercise.name}
                                             onError={() => setGifError(true)}
                                             style={{
-                                                width: '100%',
+                                                maxWidth: '250px',
+                                                maxHeight: '250px',
+                                                width: 'auto',
                                                 height: 'auto',
                                                 display: 'block',
-                                                maxHeight: '280px',
+                                                margin: '0 auto',
                                                 objectFit: 'contain',
-                                                background: '#ffffff'
+                                                borderRadius: '12px'
                                             }}
                                         />
                                     </div>

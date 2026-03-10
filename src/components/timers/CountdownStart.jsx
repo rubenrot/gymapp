@@ -4,7 +4,7 @@ import SevenSegmentDisplay from './SevenSegmentDisplay';
 import { playBeep, playLongBeep } from '../../utils/timerSounds';
 import { useOrientation } from '../../hooks/useOrientation';
 
-export default function CountdownStart({ duration = 10, onComplete, onCancel }) {
+export default function CountdownStart({ duration = 5, onComplete, onCancel }) {
     const [countdown, setCountdown] = useState(duration);
     const orientation = useOrientation();
 

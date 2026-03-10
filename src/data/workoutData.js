@@ -1,4 +1,4 @@
-﻿// Workout data – Rutinas personalizadas
+﻿﻿// Workout data – Rutinas personalizadas
 export const workoutData = [
     {
         name: 'Día 1 – Pecho + Espalda',
@@ -9,10 +9,10 @@ export const workoutData = [
             // Bloque 1 (fuerza)
             {
                 name: 'Press banca con barra',
-                sets: '4x6-8',
+                sets: '4',
                 reps: '6-8',
-                rir: '',
-                rest: '90-120s',
+                rir: '2',
+                rest: '90s',
                 order: 1,
                 block: 'Bloque 1 – Fuerza',
                 exerciseDbId: '0027',
@@ -21,10 +21,10 @@ export const workoutData = [
             },
             {
                 name: 'Jalón cerrado neutro con inclinación',
-                sets: '4x6-8',
+                sets: '4',
                 reps: '6-8',
                 rir: '',
-                rest: '90-120s',
+                rest: '90s',
                 order: 2,
                 block: 'Bloque 1 – Fuerza',
                 exerciseDbId: '0197',
@@ -34,10 +34,10 @@ export const workoutData = [
             // Bloque 2 (volumen medio)
             {
                 name: 'Press inclinado con barra',
-                sets: '3x8-10',
+                sets: '3',
                 reps: '8-10',
                 rir: '',
-                rest: '75-90s',
+                rest: '90s',
                 order: 3,
                 block: 'Bloque 2 – Volumen medio',
                 exerciseDbId: '0314',
@@ -46,10 +46,10 @@ export const workoutData = [
             },
             {
                 name: 'Remo aislado con mancuerna',
-                sets: '3x8-10',
+                sets: '3',
                 reps: '8-10',
-                rir: '',
-                rest: '75-90s',
+                rir: '2',
+                rest: '90s',
                 order: 4,
                 block: 'Bloque 2 – Volumen medio',
                 exerciseDbId: '0207',
@@ -59,10 +59,10 @@ export const workoutData = [
             // Bloque 3 (bombeo)
             {
                 name: 'Press en máquina',
-                sets: '3x10-12',
+                sets: '3',
                 reps: '10-12',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 5,
                 block: 'Bloque 3 – Bombeo',
                 exerciseDbId: '0027',
@@ -71,10 +71,10 @@ export const workoutData = [
             },
             {
                 name: 'Remo horizontal en máquina',
-                sets: '3x10-12',
+                sets: '3',
                 reps: '10-12',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 6,
                 block: 'Bloque 3 – Bombeo',
                 exerciseDbId: '0207',
@@ -92,7 +92,7 @@ export const workoutData = [
             // Bloque 1 (principal – estabilidad + fuerza)
             {
                 name: 'Press militar neutro en máquina',
-                sets: '4x8-10',
+                sets: '4',
                 reps: '8-10',
                 rir: '',
                 rest: '90s',
@@ -104,7 +104,7 @@ export const workoutData = [
             },
             {
                 name: 'Curl martillo con barra',
-                sets: '3-4x8-10',
+                sets: '3-4',
                 reps: '8-10',
                 rir: '',
                 rest: '90s',
@@ -117,10 +117,10 @@ export const workoutData = [
             // Bloque 2 (volumen medio)
             {
                 name: 'Remo superior mancuerna',
-                sets: '3x10-12',
+                sets: '3',
                 reps: '10-12',
                 rir: '',
-                rest: '75-90s',
+                rest: '90s',
                 order: 3,
                 block: 'Bloque 2 – Volumen medio',
                 exerciseDbId: '0338',
@@ -129,10 +129,10 @@ export const workoutData = [
             },
             {
                 name: 'Curl supinación cerrado barra Z',
-                sets: '3x8-10',
+                sets: '3',
                 reps: '8-10',
                 rir: '',
-                rest: '75-90s',
+                rest: '90s',
                 order: 4,
                 block: 'Bloque 2 – Volumen medio',
                 exerciseDbId: '0168',
@@ -141,10 +141,10 @@ export const workoutData = [
             },
             {
                 name: 'Extensión vertical neutra en polea',
-                sets: '3-4x8-10',
+                sets: '3-4',
                 reps: '8-10',
                 rir: '',
-                rest: '75-90s',
+                rest: '90s',
                 order: 5,
                 block: 'Bloque 2 – Volumen medio',
                 exerciseDbId: '1451',
@@ -154,10 +154,10 @@ export const workoutData = [
             // Bloque 3 (bombeo / control)
             {
                 name: 'Pájaros sentado mancuernas',
-                sets: '3x12-15',
+                sets: '3',
                 reps: '12-15',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 6,
                 block: 'Bloque 3 – Bombeo / Control',
                 exerciseDbId: '0187',
@@ -166,10 +166,10 @@ export const workoutData = [
             },
             {
                 name: 'Curl concentrado mancuerna',
-                sets: '3x10-12',
+                sets: '3',
                 reps: '10-12',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 7,
                 block: 'Bloque 3 – Bombeo / Control',
                 exerciseDbId: '0298',
@@ -178,10 +178,10 @@ export const workoutData = [
             },
             {
                 name: 'Patadas traseras mancuerna',
-                sets: '3x12-15',
+                sets: '3',
                 reps: '12-15',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 8,
                 block: 'Bloque 3 – Bombeo / Control',
                 exerciseDbId: '1452',
@@ -198,10 +198,10 @@ export const workoutData = [
         exercises: [
             {
                 name: 'Press máquina',
-                sets: '3x8-10',
+                sets: '3',
                 reps: '8-10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 1,
                 block: '',
                 exerciseDbId: '0027',
@@ -210,10 +210,10 @@ export const workoutData = [
             },
             {
                 name: 'Jalón neutro',
-                sets: '3x8-10',
+                sets: '3',
                 reps: '8-10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 2,
                 block: '',
                 exerciseDbId: '0197',
@@ -222,10 +222,10 @@ export const workoutData = [
             },
             {
                 name: 'Remo máquina',
-                sets: '3x10',
+                sets: '3',
                 reps: '10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 3,
                 block: '',
                 exerciseDbId: '0207',
@@ -234,10 +234,10 @@ export const workoutData = [
             },
             {
                 name: 'Press neutro hombro',
-                sets: '3x10',
+                sets: '3',
                 reps: '10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 4,
                 block: '',
                 exerciseDbId: '0134',
@@ -246,10 +246,10 @@ export const workoutData = [
             },
             {
                 name: 'Curl martillo',
-                sets: '3x10',
+                sets: '3',
                 reps: '10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 5,
                 block: '',
                 exerciseDbId: '0298',
@@ -258,10 +258,10 @@ export const workoutData = [
             },
             {
                 name: 'Extensión polea',
-                sets: '3x10',
+                sets: '3',
                 reps: '10',
                 rir: '',
-                rest: '60-75s',
+                rest: '60s',
                 order: 6,
                 block: '',
                 exerciseDbId: '1451',
@@ -278,10 +278,10 @@ export const workoutData = [
         exercises: [
             {
                 name: 'Elíptica',
-                sets: '1x25-30min',
-                reps: '25-30 min',
+                sets: '1',
+                reps: '30 min',
                 rir: '',
-                rest: '',
+                rest: '180s',
                 order: 1,
                 block: 'Cardio',
                 exerciseDbId: 'cardio-01',
@@ -290,8 +290,8 @@ export const workoutData = [
             },
             {
                 name: 'Plancha frontal',
-                sets: '3x30-40s',
-                reps: '30-40s',
+                sets: '3',
+                reps: '40s',
                 rir: '',
                 rest: '60s',
                 order: 2,
@@ -302,7 +302,7 @@ export const workoutData = [
             },
             {
                 name: 'Plancha lateral',
-                sets: '3x30s',
+                sets: '3',
                 reps: '30s',
                 rir: '',
                 rest: '60s',
@@ -314,7 +314,7 @@ export const workoutData = [
             },
             {
                 name: 'Crunch controlado',
-                sets: '3x15',
+                sets: '3',
                 reps: '15',
                 rir: '',
                 rest: '60s',
@@ -326,7 +326,7 @@ export const workoutData = [
             },
             {
                 name: 'Elevaciones de rodillas',
-                sets: '3x12',
+                sets: '3',
                 reps: '12',
                 rir: '',
                 rest: '60s',
