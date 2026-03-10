@@ -30,29 +30,29 @@ export default function AppModal({
     if (!isOpen) return null;
 
     const icons = {
-        success: <CheckCircle size={28} style={{ color: 'var(--accent, #1fab97)' }} />,
+        success: <CheckCircle size={28} style={{ color: 'var(--accent, #0ce6c7)' }} />,
         error: <AlertTriangle size={28} style={{ color: 'var(--danger, #E34B4B)' }} />,
         warning: <AlertTriangle size={28} style={{ color: 'var(--warning, #F59E0B)' }} />,
-        info: <Info size={28} style={{ color: 'var(--accent, #1fab97)' }} />,
-        confirm: <Info size={28} style={{ color: 'var(--accent, #1fab97)' }} />,
+        info: <Info size={28} style={{ color: 'var(--accent, #0ce6c7)' }} />,
+        confirm: <Info size={28} style={{ color: 'var(--accent, #0ce6c7)' }} />,
         danger: <Trash2 size={28} style={{ color: 'var(--danger, #E34B4B)' }} />
     };
 
     const iconBgColors = {
-        success: 'rgba(31, 171, 151, 0.15)',
+        success: 'rgba(12, 230, 199, 0.15)',
         error: 'rgba(227, 75, 75, 0.15)',
         warning: 'rgba(245, 158, 11, 0.15)',
-        info: 'rgba(31, 171, 151, 0.15)',
-        confirm: 'rgba(31, 171, 151, 0.15)',
+        info: 'rgba(12, 230, 199, 0.15)',
+        confirm: 'rgba(12, 230, 199, 0.15)',
         danger: 'rgba(227, 75, 75, 0.15)'
     };
 
     const primaryBtnColors = {
-        success: 'var(--accent, #1fab97)',
+        success: 'var(--accent, #0ce6c7)',
         error: 'var(--danger, #E34B4B)',
         warning: 'var(--warning, #F59E0B)',
-        info: 'var(--accent, #1fab97)',
-        confirm: 'var(--accent, #1fab97)',
+        info: 'var(--accent, #0ce6c7)',
+        confirm: 'var(--accent, #0ce6c7)',
         danger: 'var(--danger, #E34B4B)'
     };
 

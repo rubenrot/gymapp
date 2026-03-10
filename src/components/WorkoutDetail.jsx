@@ -526,7 +526,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                 justifyContent: 'center',
                                 flexShrink: 0
                             }}>
-                                <Dumbbell size={24} style={{ color: 'var(--accent, #1fab97)' }} />
+                                <Dumbbell size={24} style={{ color: 'var(--accent, #0ce6c7)' }} />
                             </div>
                             <h3 style={{ margin: 0 }}>{detailExercise.name}</h3>
                         </div>

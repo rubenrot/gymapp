@@ -53,8 +53,8 @@
   --border-light: #3A4049;
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #1fab97 0%, #0f6b5a 100%);
-  --gradient-accent: linear-gradient(135deg, #2cc4ad 0%, #178a74 100%);
+  --gradient-primary: linear-gradient(135deg, #0ce6c7 0%, #078d7a 100%);
+  --gradient-accent: linear-gradient(135deg, #3dfce5 0%, #0ab8a0 100%);
   --gradient-dark: linear-gradient(180deg, #0D0F12 0%, #050507 100%);
 
   /* Spacing */

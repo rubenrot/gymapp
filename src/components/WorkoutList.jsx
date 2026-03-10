@@ -132,6 +132,7 @@ export default function WorkoutList({ onSelectWorkout }) {
                             style={{
                                 background: workoutColors[index % workoutColors.length],
                                 border: '1px solid var(--border)',
+                                borderLeft: '3px solid var(--accent, #0ce6c7)',
                                 color: 'var(--text-main)',
                                 animationDelay: `${index * 100}ms`
                             }}
