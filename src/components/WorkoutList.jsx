@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Calendar, Play, Pause, X } from 'lucide-react';
-import { getWorkouts, getSessionsByWorkout } from '../db/database';
+import { getWorkouts, getSessionsByWorkout, getExercisesByWorkout } from '../db/database';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getSavedSession, clearSession } from '../utils/sessionStorage';
@@ -8,6 +8,7 @@ import { getSavedSession, clearSession } from '../utils/sessionStorage';
 export default function WorkoutList({ onSelectWorkout }) {
     const [workouts, setWorkouts] = useState([]);
     const [lastSessions, setLastSessions] = useState({});
+    const [blockCounts, setBlockCounts] = useState({});
     const [pausedSession, setPausedSession] = useState(null);
 
     async function loadWorkouts() {
@@ -16,13 +17,19 @@ export default function WorkoutList({ onSelectWorkout }) {
 
         // Load last session for each workout
         const sessions = {};
+        const blocks = {};
         for (const workout of workoutList) {
             const workoutSessions = await getSessionsByWorkout(workout.id, 1);
             if (workoutSessions.length > 0) {
                 sessions[workout.id] = workoutSessions[0];
             }
+            // Count unique blocks per workout
+            const exercises = await getExercisesByWorkout(workout.id);
+            const uniqueBlocks = new Set(exercises.map(e => e.block || '__no_block__'));
+            blocks[workout.id] = uniqueBlocks.size;
         }
         setLastSessions(sessions);
+        setBlockCounts(blocks);
     }
 
     function loadPausedSession() {
@@ -142,7 +149,9 @@ export default function WorkoutList({ onSelectWorkout }) {
                                     {workout.name}
                                 </h3>
                                 <p style={{ opacity: 0.9, fontSize: '0.875rem', marginBottom: 0 }}>
-                                    {workout.day}
+                                    {blockCounts[workout.id] === 1
+                                        ? 'Bloque Único'
+                                        : `${blockCounts[workout.id] || ''} Bloques`}
                                 </p>
                                 {workout.duration && (
                                     <p style={{ opacity: 0.7, fontSize: '0.75rem', marginBottom: 0, marginTop: '4px' }}>
