@@ -12,7 +12,7 @@ import NotesModal from './NotesModal';
 import PrepTimer from './PrepTimer';
 import { requestWakeLock, releaseWakeLock } from '../utils/wakeLock';
 import { saveSession, clearSession } from '../utils/sessionStorage';
-import { getExerciseImageUrl } from '../data/exerciseImages';
+import { getExerciseGifUrl } from '../data/exerciseImages';
 import AppModal from './AppModal';
 
 export default function SessionTracker({ workout, onClose }) {
@@ -30,13 +30,18 @@ export default function SessionTracker({ workout, onClose }) {
     const [showNotes, setShowNotes] = useState(false);
     const [lastWeights, setLastWeights] = useState({});
     const [startTime] = useState(Date.now());
-    const [imageError, setImageError] = useState(false);
+    const [gifError, setGifError] = useState(false);
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [sessionDuration, setSessionDuration] = useState(0);
 
     useEffect(() => {
         initSession();
     }, [workout]);
+
+    // Reset image error states when exercise changes
+    useEffect(() => {
+        setGifError(false);
+    }, [currentExerciseIndex]);
 
     // Block navigation during active session
     useEffect(() => {
@@ -400,14 +405,14 @@ export default function SessionTracker({ workout, onClose }) {
                     border: '1px solid var(--border)'
                 }}>
                     {(() => {
-                        const exerciseImageUrl = getExerciseImageUrl(currentExercise.name);
+                        const exerciseGifUrl = getExerciseGifUrl(currentExercise.name);
 
-                        if (exerciseImageUrl && !imageError) {
+                        if (exerciseGifUrl && !gifError) {
                             return (
                                 <img
-                                    src={exerciseImageUrl}
+                                    src={exerciseGifUrl}
                                     alt={currentExercise.name}
-                                    onError={() => setImageError(true)}
+                                    onError={() => setGifError(true)}
                                     style={{
                                         width: '100%',
                                         height: 'auto',
