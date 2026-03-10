@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2, X, Dumbbell, History } from 'lucide-react';
+import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2, X, Dumbbell, History, ChevronDown } from 'lucide-react';
 import { getExercisesByWorkout, getSetsByExercise, addExercise, updateExercise, deleteExercise } from '../db/database';
 import ExerciseModal from './ExerciseModal';
 import AppModal from './AppModal';
@@ -15,6 +15,17 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
     const [detailExercise, setDetailExercise] = useState(null);
     const [detailHistory, setDetailHistory] = useState([]);
     const [gifError, setGifError] = useState(false);
+    const [collapsedBlocks, setCollapsedBlocks] = useState({});
+
+    // Colapsar todos los bloques por defecto al cargar ejercicios
+    useEffect(() => {
+        const blocks = {};
+        exercises.forEach(ex => {
+            const blockName = ex.block || 'Bloque único';
+            blocks[blockName] = true;
+        });
+        setCollapsedBlocks(blocks);
+    }, [exercises]);
 
     useEffect(() => {
         if (!detailExercise) return;
@@ -88,6 +99,22 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
         }
     };
 
+    const toggleBlock = (blockName) => {
+        setCollapsedBlocks(prev => ({ ...prev, [blockName]: !prev[blockName] }));
+    };
+
+    // Agrupar ejercicios por bloques manteniendo el orden
+    const groupedExercises = exercises.reduce((groups, exercise) => {
+        const blockName = exercise.block || 'Bloque único';
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && lastGroup.block === blockName) {
+            lastGroup.exercises.push(exercise);
+        } else {
+            groups.push({ block: blockName, exercises: [exercise] });
+        }
+        return groups;
+    }, []);
+
     return (
         <div className="animate-fadeIn" style={{ paddingBottom: '80px' }}>
             {/* Header */}
@@ -158,189 +185,226 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                    {exercises.map((exercise, index) => {
-                        const showBlockHeader = exercise.block &&
-                            (index === 0 || exercises[index - 1].block !== exercise.block);
+                    {groupedExercises.map((group, groupIndex) => {
+                        const isCollapsed = collapsedBlocks[group.block];
+
+                        const renderExerciseCard = (exercise, index) => (
+                            <div key={exercise.id}>
+                                <div
+                                    className="card animate-slideInRight"
+                                    style={{ animationDelay: `${index * 50}ms`, position: 'relative', paddingRight: '50px' }}
+                                >
+                                    {/* Edit Button – top right */}
+                                    <button
+                                        onClick={() => handleEditClick(exercise)}
+                                        className="btn-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            top: 'var(--spacing-sm)',
+                                            right: 'var(--spacing-sm)',
+                                            width: '28px',
+                                            height: '28px',
+                                            background: 'transparent',
+                                            color: 'var(--text-muted)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: 0,
+                                            border: 'none',
+                                            opacity: 0.6,
+                                            transition: 'opacity 0.2s'
+                                        }}
+                                    >
+                                        <Pencil size={14} />
+                                    </button>
+
+                                    {/* Delete Button – bottom right */}
+                                    <button
+                                        onClick={() => handleDeleteClick(exercise)}
+                                        className="btn-icon"
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 'var(--spacing-sm)',
+                                            right: 'var(--spacing-sm)',
+                                            width: '28px',
+                                            height: '28px',
+                                            background: 'transparent',
+                                            color: 'var(--danger, #E34B4B)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: 0,
+                                            border: 'none',
+                                            opacity: 0.5,
+                                            transition: 'opacity 0.2s'
+                                        }}
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'flex-start',
+                                        marginBottom: 'var(--spacing-md)'
+                                    }}>
+                                        <div
+                                            onClick={() => handleExerciseDetail(exercise)}
+                                            style={{ flex: 1, paddingRight: '40px', cursor: 'pointer' }}
+                                        >
+                                            <h4 style={{
+                                                fontSize: '1.125rem',
+                                                marginBottom: 'var(--spacing-xs)',
+                                                color: 'var(--text-primary)'
+                                            }}>
+                                                {exercise.name}
+                                            </h4>
+
+                                            {exercise.notes && (
+                                                <p style={{
+                                                    fontSize: '0.875rem',
+                                                    color: 'var(--text-muted)',
+                                                    fontStyle: 'italic',
+                                                    marginBottom: 'var(--spacing-sm)'
+                                                }}>
+                                                    {exercise.notes}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {lastWeights[exercise.id] && (
+                                        <div style={{
+                                            marginBottom: 'var(--spacing-md)'
+                                        }}>
+                                            <span style={{
+                                                background: 'var(--gradient-primary)',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: 700,
+                                                color: 'white'
+                                            }}>
+                                                Último: {lastWeights[exercise.id]} kg
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gap: 'var(--spacing-sm)',
+                                        padding: 'var(--spacing-md)',
+                                        background: 'var(--bg-input)',
+                                        borderRadius: 'var(--radius-md)'
+                                    }}>
+                                        <div>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                color: 'var(--text-muted)',
+                                                fontSize: '0.75rem',
+                                                marginBottom: '4px'
+                                            }}>
+                                                <Repeat size={14} />
+                                                <span>Series</span>
+                                            </div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                {exercise.sets}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                color: 'var(--text-muted)',
+                                                fontSize: '0.75rem',
+                                                marginBottom: '4px'
+                                            }}>
+                                                <TrendingUp size={14} />
+                                                <span>RIR</span>
+                                            </div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                {exercise.rir}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                color: 'var(--text-muted)',
+                                                fontSize: '0.75rem',
+                                                marginBottom: '4px'
+                                            }}>
+                                                <Clock size={14} />
+                                                <span>Desc.</span>
+                                            </div>
+                                            <div style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                {exercise.rest}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+
 
                         return (
-                            <div key={exercise.id}>
-                                {showBlockHeader && (
-                                    <div style={{
+                            <div key={group.block} style={{ marginTop: groupIndex > 0 ? 'var(--spacing-sm)' : 0 }}>
+                                {/* Block Header – Desplegable */}
+                                <div
+                                    onClick={() => toggleBlock(group.block)}
+                                    style={{
                                         padding: 'var(--spacing-sm) var(--spacing-md)',
-                                        marginBottom: 'var(--spacing-sm)',
-                                        marginTop: index > 0 ? 'var(--spacing-md)' : 0,
+                                        marginBottom: isCollapsed ? 0 : 'var(--spacing-sm)',
                                         background: 'var(--surface-2, rgba(255,255,255,0.05))',
                                         borderRadius: 'var(--radius-md)',
                                         borderLeft: '3px solid var(--accent, #1fab97)',
                                         fontSize: '0.875rem',
                                         fontWeight: 600,
                                         color: 'var(--accent, var(--text-primary))',
-                                        letterSpacing: '0.02em'
-                                    }}>
-                                        🔹 {exercise.block}
-                                    </div>
-                                )}
-                                <div
-                                    className="card animate-slideInRight"
-                                    style={{ animationDelay: `${index * 50}ms`, position: 'relative', paddingRight: '50px' }}
+                                        letterSpacing: '0.02em',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        userSelect: 'none',
+                                        transition: 'background 0.2s'
+                                    }}
                                 >
-                            {/* Edit Button – top right */}
-                            <button
-                                onClick={() => handleEditClick(exercise)}
-                                className="btn-icon"
-                                style={{
-                                    position: 'absolute',
-                                    top: 'var(--spacing-sm)',
-                                    right: 'var(--spacing-sm)',
-                                    width: '28px',
-                                    height: '28px',
-                                    background: 'transparent',
-                                    color: 'var(--text-muted)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: 0,
-                                    border: 'none',
-                                    opacity: 0.6,
-                                    transition: 'opacity 0.2s'
-                                }}
-                            >
-                                <Pencil size={14} />
-                            </button>
-
-                            {/* Delete Button – bottom right */}
-                            <button
-                                onClick={() => handleDeleteClick(exercise)}
-                                className="btn-icon"
-                                style={{
-                                    position: 'absolute',
-                                    bottom: 'var(--spacing-sm)',
-                                    right: 'var(--spacing-sm)',
-                                    width: '28px',
-                                    height: '28px',
-                                    background: 'transparent',
-                                    color: 'var(--danger, #E34B4B)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: 0,
-                                    border: 'none',
-                                    opacity: 0.5,
-                                    transition: 'opacity 0.2s'
-                                }}
-                            >
-                                <Trash2 size={14} />
-                            </button>
-
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'flex-start',
-                                marginBottom: 'var(--spacing-md)'
-                            }}>
-                                <div
-                                    onClick={() => handleExerciseDetail(exercise)}
-                                    style={{ flex: 1, paddingRight: '40px', cursor: 'pointer' }}
-                                >
-                                    <h4 style={{
-                                        fontSize: '1.125rem',
-                                        marginBottom: 'var(--spacing-xs)',
-                                        color: 'var(--text-primary)'
-                                    }}>
-                                        {exercise.name}
-                                    </h4>
-
-                                    {exercise.notes && (
-                                        <p style={{
-                                            fontSize: '0.875rem',
+                                    <span>🔹 {group.block}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                        <span style={{
+                                            fontSize: '0.75rem',
                                             color: 'var(--text-muted)',
-                                            fontStyle: 'italic',
-                                            marginBottom: 'var(--spacing-sm)'
+                                            fontWeight: 400
                                         }}>
-                                            {exercise.notes}
-                                        </p>
-                                    )}
+                                            {group.exercises.length} ej.
+                                        </span>
+                                        <ChevronDown
+                                            size={16}
+                                            style={{
+                                                transition: 'transform 0.3s ease',
+                                                transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
-                            {lastWeights[exercise.id] && (
+                                {/* Exercises inside block */}
                                 <div style={{
-                                    marginBottom: 'var(--spacing-md)'
+                                    display: isCollapsed ? 'none' : 'flex',
+                                    flexDirection: 'column',
+                                    gap: 'var(--spacing-md)'
                                 }}>
-                                    <span style={{
-                                        background: 'var(--gradient-primary)',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 700,
-                                        color: 'white'
-                                    }}>
-                                        Último: {lastWeights[exercise.id]} kg
-                                    </span>
-                                </div>
-                            )}
-
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
-                                gap: 'var(--spacing-sm)',
-                                padding: 'var(--spacing-md)',
-                                background: 'var(--bg-input)',
-                                borderRadius: 'var(--radius-md)'
-                            }}>
-                                <div>
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        color: 'var(--text-muted)',
-                                        fontSize: '0.75rem',
-                                        marginBottom: '4px'
-                                    }}>
-                                        <Repeat size={14} />
-                                        <span>Series</span>
-                                    </div>
-                                    <div style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                        {exercise.sets}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        color: 'var(--text-muted)',
-                                        fontSize: '0.75rem',
-                                        marginBottom: '4px'
-                                    }}>
-                                        <TrendingUp size={14} />
-                                        <span>RIR</span>
-                                    </div>
-                                    <div style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                        {exercise.rir}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        color: 'var(--text-muted)',
-                                        fontSize: '0.75rem',
-                                        marginBottom: '4px'
-                                    }}>
-                                        <Clock size={14} />
-                                        <span>Desc.</span>
-                                    </div>
-                                    <div style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                        {exercise.rest}
-                                    </div>
+                                    {group.exercises.map((exercise, i) => renderExerciseCard(exercise, i))}
                                 </div>
                             </div>
-                        </div>
-                        </div>
                         );
                     })}
                 </div>
