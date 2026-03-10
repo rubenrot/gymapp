@@ -96,28 +96,33 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 padding: 'var(--spacing-xl) var(--spacing-md)',
                 marginBottom: 'var(--spacing-xl)'
             }}>
-                <div className="container">
+                <div className="container" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--spacing-md)'
+                }}>
                     <button
                         onClick={onBack}
                         className="btn-icon"
                         style={{
                             background: 'rgba(255, 255, 255, 0.2)',
                             color: 'white',
-                            marginBottom: 'var(--spacing-md)'
+                            flexShrink: 0
                         }}
                     >
                         <ArrowLeft size={24} />
                     </button>
 
-                    <h2 style={{ color: 'white', marginBottom: 'var(--spacing-xs)' }}>
-                        {workout.name}
-                    </h2>
-                    <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 0 }}>
-                        {workout.day}
-                        {workout.duration && (
-                            <span style={{ marginLeft: '12px', opacity: 0.8 }}>⏱ {workout.duration}</span>
-                        )}
-                    </p>
+                    <div>
+                        <h2 style={{ color: 'white', marginBottom: 'var(--spacing-xs)' }}>
+                            {workout.name}
+                        </h2>
+                        <p style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 0 }}>
+                            {workout.duration && (
+                                <span style={{ opacity: 0.8 }}>⏱ {workout.duration}</span>
+                            )}
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -166,7 +171,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                         marginTop: index > 0 ? 'var(--spacing-md)' : 0,
                                         background: 'var(--surface-2, rgba(255,255,255,0.05))',
                                         borderRadius: 'var(--radius-md)',
-                                        borderLeft: '3px solid var(--accent, #C9A227)',
+                                        borderLeft: '3px solid var(--accent, #1fab97)',
                                         fontSize: '0.875rem',
                                         fontWeight: 600,
                                         color: 'var(--accent, var(--text-primary))',
@@ -457,7 +462,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                 justifyContent: 'center',
                                 flexShrink: 0
                             }}>
-                                <Dumbbell size={24} style={{ color: 'var(--accent, #C9A227)' }} />
+                                <Dumbbell size={24} style={{ color: 'var(--accent, #1fab97)' }} />
                             </div>
                             <h3 style={{ margin: 0 }}>{detailExercise.name}</h3>
                         </div>
@@ -471,7 +476,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                         borderRadius: 'var(--radius-md)',
                                         overflow: 'hidden',
                                         marginBottom: 'var(--spacing-lg)',
-                                        background: 'var(--bg-input, rgba(255,255,255,0.05))',
+                                        background: '#ffffff',
                                         border: '1px solid var(--border)'
                                     }}>
                                         <img
@@ -484,7 +489,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                                 display: 'block',
                                                 maxHeight: '280px',
                                                 objectFit: 'contain',
-                                                background: '#14171B'
+                                                background: '#ffffff'
                                             }}
                                         />
                                     </div>

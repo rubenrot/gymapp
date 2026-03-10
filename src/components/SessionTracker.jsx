@@ -414,7 +414,7 @@ export default function SessionTracker({ workout, onClose }) {
                                         display: 'block',
                                         minHeight: '250px',
                                         objectFit: 'cover',
-                                        background: 'var(--bg-input)'
+                                        background: '#ffffff'
                                     }}
                                 />
                             );

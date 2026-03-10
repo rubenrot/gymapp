@@ -8,11 +8,11 @@
   --surface-2: #262A30;
   --border: #2F343C;
 
-  /* Accent — Valhalla Gold */
-  --accent: #C9A227;
-  --accent-strong: #DDB830;
-  --accent-dark: #A8841E;
-  --accent-deep: #7A6317;
+  /* Accent — Emerald Turquoise */
+  --accent: #1fab97;
+  --accent-strong: #2cc4ad;
+  --accent-dark: #178a74;
+  --accent-deep: #0f6b5a;
 
   /* Metal tones */
   --metal-silver: #C7CCD4;
@@ -53,8 +53,8 @@
   --border-light: #3A4049;
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #C9A227 0%, #7A6317 100%);
-  --gradient-accent: linear-gradient(135deg, #DDB830 0%, #A8841E 100%);
+  --gradient-primary: linear-gradient(135deg, #1fab97 0%, #0f6b5a 100%);
+  --gradient-accent: linear-gradient(135deg, #2cc4ad 0%, #178a74 100%);
   --gradient-dark: linear-gradient(180deg, #0D0F12 0%, #050507 100%);
 
   /* Spacing */
@@ -263,7 +263,9 @@ p {
 }
 
 .card-interactive:active {
-  transform: translateY(-2px);
+  transform: scale(0.96);
+  opacity: 0.85;
+  transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
 /* Glass Effect */
