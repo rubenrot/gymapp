@@ -141,47 +141,46 @@ export default function WorkoutList({ onSelectWorkout }) {
                                 border: '1px solid var(--border)',
                                 borderLeft: '3px solid var(--accent, #0ce6c7)',
                                 color: 'var(--text-main)',
-                                animationDelay: `${index * 100}ms`
+                                animationDelay: `${index * 100}ms`,
+                                padding: 'var(--spacing-md)'
                             }}
                         >
-                            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-                                <h3 style={{ fontSize: '1.25rem', marginBottom: 'var(--spacing-xs)' }}>
+                            <div style={{ marginBottom: 'var(--spacing-xs)' }}>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '2px' }}>
                                     {workout.name}
                                 </h3>
-                                <p style={{ opacity: 0.9, fontSize: '0.875rem', marginBottom: 0 }}>
+                                <p style={{ opacity: 0.9, fontSize: '0.8rem', marginBottom: 0 }}>
                                     {blockCounts[workout.id] === 1
                                         ? 'Bloque Único'
                                         : `${blockCounts[workout.id] || ''} Bloques`}
                                 </p>
                                 {workout.duration && (
-                                    <p style={{ opacity: 0.7, fontSize: '0.75rem', marginBottom: 0, marginTop: '4px' }}>
+                                    <p style={{ opacity: 0.7, fontSize: '0.7rem', marginBottom: 0, marginTop: '2px' }}>
                                         ⏱ {workout.duration}
                                     </p>
                                 )}
                             </div>
 
-                            {lastSession && (
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 'var(--spacing-xs)',
-                                    fontSize: '0.75rem',
-                                    opacity: 0.8,
-                                    marginTop: 'var(--spacing-md)'
-                                }}>
-                                    <Calendar size={14} />
-                                    <span>
-                                        Última: {format(new Date(lastSession.date), "d 'de' MMMM", { locale: es })}
-                                    </span>
-                                </div>
-                            )}
-
                             <div style={{
                                 display: 'flex',
-                                justifyContent: 'flex-end',
-                                marginTop: 'var(--spacing-md)'
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
                             }}>
-                                <ChevronRight size={24} />
+                                {lastSession ? (
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 'var(--spacing-xs)',
+                                        fontSize: '0.7rem',
+                                        opacity: 0.8
+                                    }}>
+                                        <Calendar size={12} />
+                                        <span>
+                                            Última: {format(new Date(lastSession.date), "d 'de' MMMM", { locale: es })}
+                                        </span>
+                                    </div>
+                                ) : <div />}
+                                <ChevronRight size={20} style={{ opacity: 0.6 }} />
                             </div>
                         </div>
                     );

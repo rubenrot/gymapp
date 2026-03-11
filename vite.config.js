@@ -87,14 +87,8 @@ export default defineConfig({
     })
   ],
   server: {
-    host: '0.0.0.0', // Accept connections from any IP (required for WAN access)
+    host: '0.0.0.0',
     port: 3000,
-    cors: true,
-    hmr: {
-      protocol: 'ws',
-      host: 'gorilapp.duckdns.org',
-      port: 3000,
-      path: '/gym/'
-    }
+    cors: true
   }
 })

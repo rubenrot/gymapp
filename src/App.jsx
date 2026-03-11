@@ -7,6 +7,7 @@ import SessionTracker from './components/SessionTracker';
 import History from './components/History';
 import ProgressCharts from './components/ProgressCharts';
 import Profile from './components/Profile';
+import ExerciseLibrary from './components/ExerciseLibrary';
 import TimerModule from './components/TimerModule';
 import { initializeDatabase } from './db/database';
 import { applyTheme } from './utils/theme';
@@ -118,7 +119,9 @@ function App() {
 
       {currentView === 'timer' && <TimerModule onBack={() => handleNavigate('workouts')} />}
 
-      {currentView === 'profile' && <Profile />}
+      {currentView === 'profile' && <Profile onNavigate={handleNavigate} />}
+
+      {currentView === 'exercises' && <ExerciseLibrary onBack={() => handleNavigate('profile')} />}
     </Layout>
   );
 }

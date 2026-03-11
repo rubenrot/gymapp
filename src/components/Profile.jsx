@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database, Ruler, RefreshCw, Palette } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Ruler, RefreshCw, Palette, Book } from 'lucide-react';
 import { exportData, importData, clearAllData, getDatabaseStats } from '../db/backup';
 import { resetWorkoutTemplates } from '../db/database';
 import { THEMES, getTheme, setTheme } from '../utils/theme';
@@ -7,7 +7,7 @@ import AppModal from './AppModal';
 
 const HEIGHT_KEY = 'userHeightCm';
 
-export default function Profile() {
+export default function Profile({ onNavigate }) {
     const [stats, setStats] = useState(null);
     const [message, setMessage] = useState('');
     const [heightCm, setHeightCm] = useState(() => localStorage.getItem(HEIGHT_KEY) || '');
@@ -115,6 +115,44 @@ export default function Profile() {
     return (
         <div className="container animate-fadeIn" style={{ paddingTop: 'var(--spacing-xl)', paddingBottom: 'var(--spacing-xl)' }}>
             <h2 style={{ marginBottom: 'var(--spacing-lg)' }}>Perfil</h2>
+
+            {/* Exercise Library Link */}
+            <button
+                onClick={() => onNavigate('exercises')}
+                className="card"
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--spacing-md)',
+                    padding: 'var(--spacing-lg)',
+                    marginBottom: 'var(--spacing-lg)',
+                    cursor: 'pointer',
+                    border: '1px solid var(--accent-dark)',
+                    background: 'var(--surface-1)',
+                    color: 'var(--text-primary)',
+                    textAlign: 'left',
+                    transition: 'all 0.2s ease'
+                }}
+            >
+                <div style={{
+                    background: 'var(--accent)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: 'var(--spacing-md)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Book size={24} style={{ color: 'var(--text-on-accent)' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700, fontSize: '1rem' }}>Biblioteca de Ejercicios</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        752 ejercicios con GIFs animados
+                    </div>
+                </div>
+                <span style={{ color: 'var(--accent)', fontSize: '1.2rem' }}>→</span>
+            </button>
 
             <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
                 <img
