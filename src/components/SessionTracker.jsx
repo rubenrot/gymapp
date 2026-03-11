@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Check, ChevronLeft, ChevronRight, StickyNote, Timer, Pause } from 'lucide-react';
+import { X, Check, ChevronLeft, ChevronRight, StickyNote, Timer, Pause, Pencil, CheckCheck } from 'lucide-react';
 import {
     getExercisesByWorkout,
     createSession,
@@ -33,6 +33,8 @@ export default function SessionTracker({ workout, onClose }) {
     const [gifError, setGifError] = useState(false);
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [sessionDuration, setSessionDuration] = useState(0);
+    const [setWeights, setSetWeights] = useState({}); // { setNumber: weight } per exercise
+    const [editingWeight, setEditingWeight] = useState(false);
 
     useEffect(() => {
         initSession();
@@ -85,6 +87,7 @@ export default function SessionTracker({ workout, onClose }) {
             setRpe(saved.rpe);
             setExercisePhase(saved.exercisePhase || 'input');
             setSessionSets(saved.sessionSets || {});
+            setSetWeights(saved.setWeights || {});
 
             // Clear the saved session from localStorage
             clearSession();
@@ -135,6 +138,15 @@ export default function SessionTracker({ workout, onClose }) {
     function startExerciseSets() {
         if (!weight) return;
 
+        // Initialize per-set weights with the input weight
+        const exercise = exercises[currentExerciseIndex];
+        const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
+        const initialWeights = {};
+        for (let i = 1; i <= totalSets; i++) {
+            initialWeights[i] = parseFloat(weight);
+        }
+        setSetWeights(initialWeights);
+
         // Change to executing phase
         setExercisePhase('executing');
         setCurrentSetNumber(1);
@@ -146,6 +158,7 @@ export default function SessionTracker({ workout, onClose }) {
     // Called when PrepTimer completes - user must now do the set
     function handlePrepTimerComplete() {
         setShowPrepTimer(false);
+        setEditingWeight(false);
         setExercisePhase('doing');
     }
 
@@ -169,6 +182,7 @@ export default function SessionTracker({ workout, onClose }) {
     // Called when RestTimer completes - move to next set
     function handleRestTimerComplete() {
         setShowTimer(false);
+        setEditingWeight(false);
         setCurrentSetNumber(prev => prev + 1);
 
         // Start PrepTimer for next set
@@ -188,13 +202,14 @@ export default function SessionTracker({ workout, onClose }) {
             (repsMatch[2] ? Math.round((parseInt(repsMatch[1]) + parseInt(repsMatch[2])) / 2) : parseInt(repsMatch[1]))
             : 10;
 
-        // Save all sets with same weight and RPE
+        // Save all sets with their individual weights and same RPE
         for (let setNum = 1; setNum <= totalSets; setNum++) {
+            const setWeight = setWeights[setNum] || parseFloat(weight);
             await addSet(
                 sessionId,
                 exercise.id,
                 setNum,
-                parseFloat(weight),
+                setWeight,
                 targetReps,
                 exercise.rir,
                 rpe
@@ -204,7 +219,7 @@ export default function SessionTracker({ workout, onClose }) {
             const key = `${exercise.id}-${setNum}`;
             setSessionSets(prev => ({
                 ...prev,
-                [key]: { weight: parseFloat(weight), reps: targetReps, rpe }
+                [key]: { weight: setWeight, reps: targetReps, rpe }
             }));
         }
 
@@ -215,6 +230,7 @@ export default function SessionTracker({ workout, onClose }) {
             setExercisePhase('input');
             setWeight('');
             setRpe(null);
+            setSetWeights({});
 
             // Load last weight for next exercise
             loadLastWeight(exercises[currentExerciseIndex + 1]);
@@ -248,6 +264,7 @@ export default function SessionTracker({ workout, onClose }) {
             rpe,
             exercisePhase,
             sessionSets,
+            setWeights,
             startTime
         };
 
@@ -281,6 +298,22 @@ export default function SessionTracker({ workout, onClose }) {
             setWeight('');
             setRpe(null);
         }
+    }
+
+    // Complete all remaining sets at once and jump to RPE
+    function handleCompleteAllSets() {
+        const exercise = exercises[currentExerciseIndex];
+        const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
+
+        // Close any active timer/prep overlay
+        setShowTimer(false);
+        setShowPrepTimer(false);
+
+        // Mark the current set number as the last one (so progress dots show all green)
+        setCurrentSetNumber(totalSets);
+
+        // Jump directly to RPE phase
+        setExercisePhase('rpe');
     }
 
     function handleSkipSet() {
@@ -502,6 +535,32 @@ export default function SessionTracker({ workout, onClose }) {
                         >
                             Iniciar {totalSets} Series
                         </button>
+
+                        <button
+                            onClick={() => {
+                                if (!weight) return;
+                                // Initialize per-set weights
+                                const exercise = exercises[currentExerciseIndex];
+                                const sets = parseInt(exercise.sets.match(/\d+/)[0]);
+                                const initialWeights = {};
+                                for (let i = 1; i <= sets; i++) {
+                                    initialWeights[i] = parseFloat(weight);
+                                }
+                                setSetWeights(initialWeights);
+                                setCurrentSetNumber(sets);
+                                setExercisePhase('rpe');
+                            }}
+                            className="btn btn-secondary"
+                            style={{
+                                width: '100%',
+                                marginTop: 'var(--spacing-sm)',
+                                fontSize: '0.95rem'
+                            }}
+                            disabled={!weight}
+                        >
+                            <CheckCheck size={20} />
+                            Completar todas directamente
+                        </button>
                     </div>
                 )}
 
@@ -510,9 +569,66 @@ export default function SessionTracker({ workout, onClose }) {
                         <h3 style={{ marginBottom: 'var(--spacing-md)' }}>
                             Haciendo las series...
                         </h3>
-                        <p style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--primary)', marginBottom: 'var(--spacing-md)' }}>
-                            {weight} kg
-                        </p>
+
+                        {/* Editable weight for next set */}
+                        {editingWeight ? (
+                            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                    Peso para las siguientes series (kg)
+                                </label>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-sm)' }}>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        value={setWeights[currentSetNumber + 1] || setWeights[currentSetNumber] || weight}
+                                        onChange={(e) => {
+                                            const newVal = e.target.value;
+                                            const parsed = parseFloat(newVal) || 0;
+                                            const nextSet = currentSetNumber + 1;
+                                            // Propagate new weight to next set and all remaining sets
+                                            setSetWeights(prev => {
+                                                const updated = { ...prev };
+                                                for (let i = nextSet; i <= totalSets; i++) {
+                                                    updated[i] = parsed;
+                                                }
+                                                return updated;
+                                            });
+                                            setWeight(newVal);
+                                        }}
+                                        step="0.5"
+                                        autoFocus
+                                        style={{ fontSize: '1.5rem', textAlign: 'center', width: '140px' }}
+                                    />
+                                    <button
+                                        onClick={() => setEditingWeight(false)}
+                                        className="btn btn-primary"
+                                        style={{ padding: '10px 16px' }}
+                                    >
+                                        <Check size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                onClick={() => setEditingWeight(true)}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--spacing-sm)',
+                                    marginBottom: 'var(--spacing-md)',
+                                    padding: '4px 12px',
+                                    borderRadius: 'var(--radius-md)',
+                                    transition: 'background 0.2s ease'
+                                }}
+                                title="Pulsa para cambiar el peso"
+                            >
+                                <span style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--primary)' }}>
+                                    {setWeights[currentSetNumber + 1] || setWeights[currentSetNumber] || weight} kg
+                                </span>
+                                <Pencil size={16} style={{ color: 'var(--text-muted)', opacity: 0.7 }} />
+                            </div>
+                        )}
 
                         {/* Progress indicator */}
                         <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-lg)' }}>
@@ -540,6 +656,19 @@ export default function SessionTracker({ workout, onClose }) {
                         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                             Esperando timer de descanso...
                         </p>
+
+                        <button
+                            onClick={handleCompleteAllSets}
+                            className="btn btn-primary"
+                            style={{
+                                width: '100%',
+                                marginTop: 'var(--spacing-lg)',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            <CheckCheck size={20} />
+                            Completar todas las series
+                        </button>
                     </div>
                 )}
 
@@ -555,9 +684,66 @@ export default function SessionTracker({ workout, onClose }) {
                         }}>
                             Serie {currentSetNumber} / {totalSets}
                         </p>
-                        <p style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--primary)', marginBottom: 'var(--spacing-xs)' }}>
-                            {weight} kg
-                        </p>
+
+                        {/* Editable weight */}
+                        {editingWeight ? (
+                            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                    Peso para esta serie y siguientes (kg)
+                                </label>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-sm)' }}>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        value={setWeights[currentSetNumber] || weight}
+                                        onChange={(e) => {
+                                            const newVal = e.target.value;
+                                            const parsed = parseFloat(newVal) || 0;
+                                            // Propagate new weight to current and all remaining sets
+                                            setSetWeights(prev => {
+                                                const updated = { ...prev };
+                                                for (let i = currentSetNumber; i <= totalSets; i++) {
+                                                    updated[i] = parsed;
+                                                }
+                                                return updated;
+                                            });
+                                            setWeight(newVal);
+                                        }}
+                                        step="0.5"
+                                        autoFocus
+                                        style={{ fontSize: '1.5rem', textAlign: 'center', width: '140px' }}
+                                    />
+                                    <button
+                                        onClick={() => setEditingWeight(false)}
+                                        className="btn btn-primary"
+                                        style={{ padding: '10px 16px' }}
+                                    >
+                                        <Check size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div
+                                onClick={() => setEditingWeight(true)}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--spacing-sm)',
+                                    marginBottom: 'var(--spacing-xs)',
+                                    padding: '4px 12px',
+                                    borderRadius: 'var(--radius-md)',
+                                    transition: 'background 0.2s ease'
+                                }}
+                                title="Pulsa para cambiar el peso"
+                            >
+                                <span style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--primary)' }}>
+                                    {setWeights[currentSetNumber] || weight} kg
+                                </span>
+                                <Pencil size={18} style={{ color: 'var(--text-muted)', opacity: 0.7 }} />
+                            </div>
+                        )}
+
                         <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: 'var(--spacing-xl)' }}>
                             {currentExercise.reps} reps
                         </p>
@@ -593,6 +779,22 @@ export default function SessionTracker({ workout, onClose }) {
                             <Check size={24} />
                             ✅ Serie hecha
                         </button>
+
+                        {currentSetNumber < totalSets && (
+                            <button
+                                onClick={handleCompleteAllSets}
+                                className="btn btn-primary"
+                                style={{
+                                    width: '100%',
+                                    marginTop: 'var(--spacing-sm)',
+                                    fontSize: '1rem',
+                                    opacity: 0.9
+                                }}
+                            >
+                                <CheckCheck size={20} />
+                                Completar todas las series
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -601,9 +803,26 @@ export default function SessionTracker({ workout, onClose }) {
                         <h3 style={{ marginBottom: 'var(--spacing-md)', textAlign: 'center' }}>
                             ¡Ejercicio completado!
                         </h3>
-                        <p style={{ textAlign: 'center', fontSize: '1.25rem', marginBottom: 'var(--spacing-lg)', color: 'var(--text-secondary)' }}>
-                            {totalSets} series × {weight} kg
-                        </p>
+                        {(() => {
+                            const weights = Object.values(setWeights);
+                            const allSame = weights.every(w => w === weights[0]);
+                            if (allSame) {
+                                return (
+                                    <p style={{ textAlign: 'center', fontSize: '1.25rem', marginBottom: 'var(--spacing-lg)', color: 'var(--text-secondary)' }}>
+                                        {totalSets} series × {weights[0] || weight} kg
+                                    </p>
+                                );
+                            }
+                            return (
+                                <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
+                                    {Object.entries(setWeights).map(([setNum, w]) => (
+                                        <p key={setNum} style={{ fontSize: '1rem', color: 'var(--text-secondary)', margin: '2px 0' }}>
+                                            Serie {setNum}: <strong>{w} kg</strong>
+                                        </p>
+                                    ))}
+                                </div>
+                            );
+                        })()}
 
                         {/* RPE Selector */}
                         <div style={{ marginBottom: 'var(--spacing-md)' }}>
