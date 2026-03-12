@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Check, ChevronLeft, ChevronRight, StickyNote, Timer, Pause, Pencil, CheckCheck } from 'lucide-react';
 import {
     getExercisesByWorkout,
@@ -35,8 +35,11 @@ export default function SessionTracker({ workout, onClose }) {
     const [sessionDuration, setSessionDuration] = useState(0);
     const [setWeights, setSetWeights] = useState({}); // { setNumber: weight } per exercise
     const [editingWeight, setEditingWeight] = useState(false);
+    const initRef = useRef(false);
 
     useEffect(() => {
+        if (initRef.current) return;
+        initRef.current = true;
         initSession();
     }, [workout]);
 
@@ -66,10 +69,13 @@ export default function SessionTracker({ workout, onClose }) {
     }, []);
 
     useEffect(() => {
-        if (exercises.length > 0) {
-            loadLastWeight(exercises[currentExerciseIndex]);
+        if (exercises.length > 0 && Object.keys(lastWeights).length > 0) {
+            // Only auto-load weight when in input phase (avoid overwriting during active sets)
+            if (exercisePhase === 'input') {
+                loadLastWeight(exercises[currentExerciseIndex]);
+            }
         }
-    }, [currentExerciseIndex, exercises]);
+    }, [currentExerciseIndex, exercises, lastWeights]);
 
     async function initSession() {
         const exerciseList = await getExercisesByWorkout(workout.id);
@@ -106,6 +112,15 @@ export default function SessionTracker({ workout, onClose }) {
             }
         }
         setLastWeights(weights);
+
+        // Set initial weight for the first exercise (or restored exercise)
+        // Only if we're not resuming a paused session (which already has a weight)
+        if (!workout.savedSession) {
+            const firstExercise = exerciseList[0];
+            if (firstExercise && weights[firstExercise.id]) {
+                setWeight(weights[firstExercise.id].toString());
+            }
+        }
     }
 
     async function loadLastWeight(exercise) {
@@ -234,6 +249,7 @@ export default function SessionTracker({ workout, onClose }) {
 
             // Load last weight for next exercise
             loadLastWeight(exercises[currentExerciseIndex + 1]);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             // Workout complete!
             await completeSession();
@@ -285,6 +301,7 @@ export default function SessionTracker({ workout, onClose }) {
             setCurrentSetNumber(1);
             setExercisePhase('input');
             setRpe(null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
@@ -297,6 +314,7 @@ export default function SessionTracker({ workout, onClose }) {
             setExercisePhase('input');
             setWeight('');
             setRpe(null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
@@ -335,6 +353,7 @@ export default function SessionTracker({ workout, onClose }) {
             setExercisePhase('input');
             setWeight('');
             setRpe(null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             // Last set of last exercise → complete workout
             completeSession();
@@ -351,6 +370,7 @@ export default function SessionTracker({ workout, onClose }) {
             setExercisePhase('input');
             setWeight('');
             setRpe(null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             // Last exercise → complete workout
             completeSession();

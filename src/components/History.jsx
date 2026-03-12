@@ -99,32 +99,34 @@ export default function History() {
 
                 <h3 style={{ marginBottom: 'var(--spacing-lg)' }}>Ejercicios realizados</h3>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                    {sessionDetails.map(({ exercise, sets }) => (
-                        <div key={exercise.id} className="card">
-                            <h4 style={{ marginBottom: 'var(--spacing-md)' }}>{exercise.name}</h4>
+                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                    {sessionDetails.map(({ exercise, sets }, index) => {
+                        const avgWeight = sets.length > 0
+                            ? (sets.reduce((sum, s) => sum + (s.weight || 0), 0) / sets.length)
+                            : 0;
+                        const avgFormatted = Number.isInteger(avgWeight) ? avgWeight : avgWeight.toFixed(1);
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
-                                {sets.map(set => (
-                                    <div
-                                        key={set.id}
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            padding: 'var(--spacing-sm)',
-                                            background: 'var(--bg-input)',
-                                            borderRadius: 'var(--radius-md)'
-                                        }}
-                                    >
-                                        <span>Serie {set.setNumber}</span>
-                                        <span style={{ fontWeight: 600 }}>
-                                            {set.weight} kg × {set.reps} reps
-                                        </span>
-                                    </div>
-                                ))}
+                        return (
+                            <div key={exercise.id} style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: 'var(--spacing-md) var(--spacing-lg)',
+                                borderBottom: index < sessionDetails.length - 1 ? '1px solid var(--border)' : 'none'
+                            }}>
+                                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{exercise.name}</span>
+                                <span style={{
+                                    fontWeight: 700,
+                                    fontSize: '0.9rem',
+                                    color: 'var(--accent)',
+                                    whiteSpace: 'nowrap',
+                                    marginLeft: 'var(--spacing-md)'
+                                }}>
+                                    {avgFormatted} kg
+                                </span>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         );

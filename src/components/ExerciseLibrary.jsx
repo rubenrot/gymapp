@@ -323,7 +323,6 @@ export default function ExerciseLibrary({ onBack }) {
                                     {/* Difficulty Levels */}
                                     {isExpanded && (
                                         <div style={{
-                                            marginLeft: 'var(--spacing-md)',
                                             marginTop: 'var(--spacing-xs)',
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -383,7 +382,6 @@ export default function ExerciseLibrary({ onBack }) {
                                                         {/* Equipment Categories — auto-expanded with exercise cards grid */}
                                                         {isLvlExpanded && (
                                                             <div style={{
-                                                                marginLeft: 'var(--spacing-sm)',
                                                                 marginTop: 'var(--spacing-sm)',
                                                                 display: 'flex',
                                                                 flexDirection: 'column',
