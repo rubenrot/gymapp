@@ -215,6 +215,43 @@ export async function getNotesByExercise(exerciseId) {
     .toArray();
 }
 
+/**
+ * Returns the last `sessionCount` training sessions for an exercise,
+ * each with its date and list of sets (weight, reps), ordered most recent first.
+ * @param {number} exerciseId
+ * @param {number} sessionCount
+ * @param {number|null} excludeSessionId – session to exclude (e.g. the current one)
+ */
+export async function getExerciseHistory(exerciseId, sessionCount = 3, excludeSessionId = null) {
+  const allSets = await db.sets
+    .where('exerciseId')
+    .equals(exerciseId)
+    .toArray();
+
+  if (allSets.length === 0) return [];
+
+  // Group sets by sessionId, excluding current session
+  const bySession = {};
+  for (const s of allSets) {
+    if (excludeSessionId && s.sessionId === excludeSessionId) continue;
+    if (!bySession[s.sessionId]) bySession[s.sessionId] = [];
+    bySession[s.sessionId].push(s);
+  }
+
+  // Build session entries, sort each group by setNumber
+  const sessionEntries = Object.values(bySession).map(sets => {
+    sets.sort((a, b) => a.setNumber - b.setNumber);
+    return {
+      date: sets[0].date,
+      sets: sets.map(s => ({ weight: s.weight, reps: s.reps }))
+    };
+  });
+
+  // Sort by date descending and take the latest N
+  sessionEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return sessionEntries.slice(0, sessionCount);
+}
+
 export async function getProgressData(exerciseId, days = 90) {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
