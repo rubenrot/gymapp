@@ -160,6 +160,11 @@ export async function updateSession(sessionId, data) {
   return await db.sessions.update(sessionId, data);
 }
 
+export async function deleteSession(sessionId) {
+  await db.sets.where('sessionId').equals(sessionId).delete();
+  return await db.sessions.delete(sessionId);
+}
+
 export async function addSet(sessionId, exerciseId, setNumber, weight, reps, rir, rpe = null) {
   return await db.sets.add({
     sessionId,

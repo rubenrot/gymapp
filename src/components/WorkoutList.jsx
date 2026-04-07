@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Calendar, Play, Pause, X } from 'lucide-react';
-import { getWorkouts, getSessionsByWorkout, getExercisesByWorkout } from '../db/database';
+import { getWorkouts, getSessionsByWorkout, getExercisesByWorkout, getSetsBySession } from '../db/database';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getSavedSession, clearSession } from '../utils/sessionStorage';
@@ -15,13 +15,18 @@ export default function WorkoutList({ onSelectWorkout }) {
         const workoutList = await getWorkouts();
         setWorkouts(workoutList);
 
-        // Load last session for each workout
+        // Load last session (with exercises) for each workout
         const sessions = {};
         const blocks = {};
         for (const workout of workoutList) {
-            const workoutSessions = await getSessionsByWorkout(workout.id, 1);
-            if (workoutSessions.length > 0) {
-                sessions[workout.id] = workoutSessions[0];
+            const workoutSessions = await getSessionsByWorkout(workout.id, 10);
+            // Find the first session that actually has sets recorded
+            for (const session of workoutSessions) {
+                const sets = await getSetsBySession(session.id);
+                if (sets.length > 0) {
+                    sessions[workout.id] = session;
+                    break;
+                }
             }
             // Count unique blocks per workout
             const exercises = await getExercisesByWorkout(workout.id);

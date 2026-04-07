@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Check, ChevronLeft, ChevronRight, StickyNote, Timer, Pause, Pencil, CheckCheck } from 'lucide-react';
+import { X, Check, ChevronLeft, ChevronRight, StickyNote, Pause, Pencil, CheckCheck } from 'lucide-react';
 import {
     getExercisesByWorkout,
     createSession,
     addSet,
     updateSession,
+    deleteSession,
     getSetsByExercise,
     getExerciseHistory
 } from '../db/database';
@@ -208,12 +209,9 @@ export default function SessionTracker({ workout, onClose }) {
         }
         setSetRepsMap(initialReps);
 
-        // Change to executing phase
-        setExercisePhase('executing');
+        // Change to doing phase directly (no automatic prep timer)
+        setExercisePhase('doing');
         setCurrentSetNumber(1);
-
-        // Start first PrepTimer
-        setShowPrepTimer(true);
     }
 
     // Called when PrepTimer completes - user must now do the set
@@ -229,10 +227,7 @@ export default function SessionTracker({ workout, onClose }) {
         const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
 
         if (currentSetNumber < totalSets) {
-            // Start rest timer before next set
-            const restSeconds = parseRestTime(exercise.rest);
-            setTimerDuration(restSeconds);
-            setShowTimer(true);
+            // Go to executing phase (rest selection) without auto-starting timer
             setExercisePhase('executing');
         } else {
             // All sets done, move to RPE phase
@@ -240,14 +235,12 @@ export default function SessionTracker({ workout, onClose }) {
         }
     }
 
-    // Called when RestTimer completes - move to next set
+    // Called when RestTimer completes - move to next set directly
     function handleRestTimerComplete() {
         setShowTimer(false);
         setEditingSetNumber(null);
         setCurrentSetNumber(prev => prev + 1);
-
-        // Start PrepTimer for next set
-        setShowPrepTimer(true);
+        setExercisePhase('doing');
     }
 
     // Submit RPE for all sets of current exercise
@@ -305,6 +298,17 @@ export default function SessionTracker({ workout, onClose }) {
     }
 
     async function completeSession() {
+        // Check if any sets were actually recorded
+        const setsRecorded = Object.keys(sessionSets).length > 0;
+
+        if (!setsRecorded) {
+            // No exercises done – delete the empty session
+            await deleteSession(sessionId);
+            clearSession();
+            onClose();
+            return;
+        }
+
         const duration = Math.floor((Date.now() - startTime) / 1000 / 60); // minutes
         await updateSession(sessionId, { duration });
 
@@ -409,6 +413,12 @@ export default function SessionTracker({ workout, onClose }) {
             // Last set of last exercise → complete workout
             completeSession();
         }
+    }
+
+    // Start rest timer with a chosen duration
+    function startRestTimer(seconds) {
+        setTimerDuration(seconds);
+        setShowTimer(true);
     }
 
     // Open the set editor modal for a specific set number
@@ -612,8 +622,8 @@ export default function SessionTracker({ workout, onClose }) {
                         const dateLabel = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
                         const uniqueWeights = [...new Set(last.sets.map(s => s.weight))];
                         const summary = uniqueWeights.length === 1
-                            ? `${uniqueWeights[0]}kg × ${last.sets.map(s => s.reps).join('/')}`
-                            : last.sets.map(s => `${s.weight}×${s.reps}`).join(' / ');
+                            ? `${uniqueWeights[0]}kg × ${last.sets.map(s => s.reps).join(' | ')}`
+                            : last.sets.map(s => `${s.weight}×${s.reps}`).join(' | ');
                         return (
                             <div style={{
                                 marginTop: 'var(--spacing-sm)',
@@ -731,9 +741,49 @@ export default function SessionTracker({ workout, onClose }) {
                         <h3 style={{ marginBottom: 'var(--spacing-sm)' }}>
                             Descanso entre series
                         </h3>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 'var(--spacing-md)' }}>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 'var(--spacing-lg)' }}>
                             Siguiente: Serie {currentSetNumber + 1}
                         </p>
+
+                        {/* Quick rest buttons */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: 'var(--spacing-sm)',
+                            marginBottom: 'var(--spacing-lg)'
+                        }}>
+                            {[
+                                { label: '30s', seconds: 30 },
+                                { label: '1 min', seconds: 60 },
+                                { label: '90s', seconds: 90 },
+                                { label: '2 min', seconds: 120 }
+                            ].map(opt => (
+                                <button
+                                    key={opt.seconds}
+                                    onClick={() => startRestTimer(opt.seconds)}
+                                    className="btn btn-primary"
+                                    style={{
+                                        padding: 'var(--spacing-md) var(--spacing-sm)',
+                                        fontSize: '0.95rem',
+                                        fontWeight: 700
+                                    }}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Skip rest – go directly to next set */}
+                        <button
+                            onClick={() => {
+                                setCurrentSetNumber(prev => prev + 1);
+                                setExercisePhase('doing');
+                            }}
+                            className="btn btn-secondary"
+                            style={{ width: '100%', marginBottom: 'var(--spacing-lg)', opacity: 0.8 }}
+                        >
+                            Saltar descanso →
+                        </button>
 
                         {/* Next set weight & reps – tap to edit */}
                         <div
@@ -777,7 +827,6 @@ export default function SessionTracker({ workout, onClose }) {
                                 const setNum = i + 1;
                                 const isDone = i < currentSetNumber;
                                 const w = setWeights[setNum] || weight;
-                                const r = setRepsMap[setNum] || '';
                                 return (
                                     <div
                                         key={i}

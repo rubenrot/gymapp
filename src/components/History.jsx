@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Calendar, Clock, ChevronRight, ChevronDown } from 'lucide-react';
+import { Calendar, ChevronRight, ChevronDown } from 'lucide-react';
 import { getSessions, getWorkoutById, getSetsBySession, getExerciseById } from '../db/database';
 import { format, startOfDay } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -7,9 +7,8 @@ import { es } from 'date-fns/locale';
 
 export default function History() {
     const [sessions, setSessions] = useState([]);
-    const [selectedSession, setSelectedSession] = useState(null);
-    const [sessionDetails, setSessionDetails] = useState(null);
     const [expandedDates, setExpandedDates] = useState({});
+    const [expandedSessions, setExpandedSessions] = useState({});
 
     useEffect(() => {
         loadSessions();
@@ -42,8 +41,8 @@ export default function History() {
                     const sorted = [...ex.sets].sort((a, b) => a.setNumber - b.setNumber);
                     const uniqueWeights = [...new Set(sorted.map(s => s.weight))];
                     const summary = uniqueWeights.length === 1
-                        ? `${uniqueWeights[0]}kg × ${sorted.map(s => s.reps).join('/')}`
-                        : sorted.map(s => `${s.weight}kg×${s.reps}`).join(' / ');
+                        ? `${uniqueWeights[0]}kg × ${sorted.map(s => s.reps).join(' | ')}`
+                        : sorted.map(s => `${s.weight}kg×${s.reps}`).join(' | ');
                     return { name: ex.name, summary, sets: sorted };
                 });
 
@@ -55,7 +54,8 @@ export default function History() {
             })
         );
 
-        setSessions(enriched);
+        // Filter out sessions with no exercises recorded
+        setSessions(enriched.filter(s => s.exerciseSummaries.length > 0));
     }
 
     // Group sessions by date
@@ -76,155 +76,6 @@ export default function History() {
         return Object.values(groups).sort((a, b) => b.date - a.date);
     }, [sessions]);
 
-    async function loadSessionDetails(session) {
-        const sets = await getSetsBySession(session.id);
-
-        // Group sets by exercise
-        const exerciseMap = {};
-        for (const set of sets) {
-            if (!exerciseMap[set.exerciseId]) {
-                const exercise = await getExerciseById(set.exerciseId);
-                exerciseMap[set.exerciseId] = {
-                    exercise: exercise || { name: 'Ejercicio eliminado' },
-                    sets: []
-                };
-            }
-            exerciseMap[set.exerciseId].sets.push(set);
-        }
-
-        setSessionDetails(Object.values(exerciseMap));
-        setSelectedSession(session);
-    }
-
-    if (selectedSession && sessionDetails) {
-        return (
-            <div className="container animate-fadeIn" style={{ paddingTop: 'var(--spacing-xl)', paddingBottom: 'var(--spacing-xl)' }}>
-                <button
-                    onClick={() => {
-                        setSelectedSession(null);
-                        setSessionDetails(null);
-                    }}
-                    className="btn btn-secondary"
-                    style={{ marginBottom: 'var(--spacing-lg)' }}
-                >
-                    ← Volver
-                </button>
-
-                <div className="card" style={{ marginBottom: 'var(--spacing-xl)' }}>
-                    <h2 style={{ marginBottom: 'var(--spacing-sm)' }}>{selectedSession.workoutName}</h2>
-                    <div style={{ display: 'flex', gap: 'var(--spacing-md)', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-                        <span>
-                            <Calendar size={16} style={{ display: 'inline', marginRight: '4px' }} />
-                            {format(new Date(selectedSession.date), "d 'de' MMMM 'de' yyyy", { locale: es })}
-                        </span>
-                        {selectedSession.duration > 0 && (
-                            <span>
-                                <Clock size={16} style={{ display: 'inline', marginRight: '4px' }} />
-                                {selectedSession.duration} min
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                <h3 style={{ marginBottom: 'var(--spacing-lg)' }}>Ejercicios realizados</h3>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-                    {sessionDetails.map(({ exercise, sets }) => {
-                        const sortedSets = [...sets].sort((a, b) => a.setNumber - b.setNumber);
-                        const avgWeight = sets.length > 0
-                            ? (sets.reduce((sum, s) => sum + (s.weight || 0), 0) / sets.length)
-                            : 0;
-                        const avgFormatted = Number.isInteger(avgWeight) ? avgWeight : avgWeight.toFixed(1);
-
-                        // Compact summary: if all weights are the same, show "60kg x 8 / 8 / 7"
-                        const uniqueWeights = [...new Set(sortedSets.map(s => s.weight))];
-                        const compactSummary = uniqueWeights.length === 1
-                            ? `${uniqueWeights[0]}kg × ${sortedSets.map(s => s.reps).join(' / ')}`
-                            : null;
-
-                        return (
-                            <div key={exercise.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                                {/* Exercise header */}
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: 'var(--spacing-md) var(--spacing-lg)',
-                                    borderBottom: '1px solid var(--border)',
-                                    background: 'var(--surface-1)'
-                                }}>
-                                    <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{exercise.name}</span>
-                                    <span style={{
-                                        fontSize: '0.75rem',
-                                        color: 'var(--text-muted)',
-                                        background: 'var(--surface-2)',
-                                        padding: '2px 8px',
-                                        borderRadius: 'var(--radius-full)',
-                                        whiteSpace: 'nowrap'
-                                    }}>
-                                        Ø {avgFormatted} kg
-                                    </span>
-                                </div>
-
-                                {/* Compact summary */}
-                                {compactSummary && (
-                                    <div style={{
-                                        padding: 'var(--spacing-sm) var(--spacing-lg)',
-                                        fontSize: '0.85rem',
-                                        fontWeight: 600,
-                                        color: 'var(--accent)',
-                                        borderBottom: '1px solid var(--border)'
-                                    }}>
-                                        {compactSummary}
-                                    </div>
-                                )}
-
-                                {/* Individual sets */}
-                                <div style={{ padding: 'var(--spacing-sm) var(--spacing-lg)' }}>
-                                    {sortedSets.map((set, si) => (
-                                        <div key={si} style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 'var(--spacing-md)',
-                                            padding: '4px 0',
-                                            borderBottom: si < sortedSets.length - 1 ? '1px solid var(--border)' : 'none',
-                                            fontSize: '0.8rem'
-                                        }}>
-                                            <span style={{
-                                                color: 'var(--text-muted)',
-                                                fontWeight: 600,
-                                                minWidth: '20px'
-                                            }}>
-                                                S{set.setNumber}
-                                            </span>
-                                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                                                {set.weight} kg
-                                            </span>
-                                            <span style={{ color: 'var(--text-secondary)' }}>
-                                                × {set.reps} reps
-                                            </span>
-                                            {set.rpe && (
-                                                <span style={{
-                                                    marginLeft: 'auto',
-                                                    fontSize: '0.7rem',
-                                                    color: 'var(--text-muted)',
-                                                    background: 'var(--surface-2)',
-                                                    padding: '1px 6px',
-                                                    borderRadius: 'var(--radius-full)'
-                                                }}>
-                                                    RPE {set.rpe}
-                                                </span>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="container animate-fadeIn" style={{ paddingTop: 'var(--spacing-xl)', paddingBottom: 'var(--spacing-xl)' }}>
@@ -295,31 +146,40 @@ export default function History() {
                             {/* Sessions for this date - collapsible */}
                             {isExpanded && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-sm)' }}>
-                                {group.sessions.map((session) => (
+                                {group.sessions.map((session) => {
+                                    const isSessionExpanded = !!expandedSessions[session.id];
+                                    return (
                                     <div
                                         key={session.id}
-                                        onClick={() => loadSessionDetails(session)}
                                         style={{
                                             marginLeft: 'var(--spacing-sm)',
                                             background: 'var(--surface-2)',
                                             border: '1px solid var(--border)',
                                             borderRadius: 'var(--radius-lg)',
-                                            cursor: 'pointer',
-                                            transition: 'background 0.15s ease',
                                             overflow: 'hidden'
                                         }}
                                     >
-                                        {/* Session header */}
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '10px 12px',
-                                            borderBottom: session.exerciseSummaries?.length > 0 ? '1px solid var(--border)' : 'none'
-                                        }}>
-                                            <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-                                                {session.workoutName}
-                                            </span>
+                                        {/* Session header – toggles expand/collapse */}
+                                        <div
+                                            onClick={() => setExpandedSessions(prev => ({ ...prev, [session.id]: !prev[session.id] }))}
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: '10px 12px',
+                                                cursor: 'pointer',
+                                                borderBottom: isSessionExpanded && session.exerciseSummaries?.length > 0 ? '1px solid var(--border)' : 'none'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
+                                                {isSessionExpanded
+                                                    ? <ChevronDown size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                                                    : <ChevronRight size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+                                                }
+                                                <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                                                    {session.workoutName}
+                                                </span>
+                                            </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', flexShrink: 0 }}>
                                                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                                                     {format(new Date(session.date), "HH:mm")}
@@ -335,12 +195,11 @@ export default function History() {
                                                         {session.duration}min
                                                     </span>
                                                 )}
-                                                <ChevronRight size={14} color="var(--text-muted)" />
                                             </div>
                                         </div>
 
-                                        {/* Exercise summaries */}
-                                        {session.exerciseSummaries?.length > 0 && (
+                                        {/* Exercise summaries – collapsible */}
+                                        {isSessionExpanded && session.exerciseSummaries?.length > 0 && (
                                             <div style={{ padding: '6px 12px 8px' }}>
                                                 {session.exerciseSummaries.map((ex, i) => (
                                                     <div key={i} style={{
@@ -376,7 +235,8 @@ export default function History() {
                                             </div>
                                         )}
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                             )}
                         </div>
