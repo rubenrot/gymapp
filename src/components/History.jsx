@@ -90,7 +90,7 @@ export default function History() {
                     </p>
                 </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xl)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-sm)' }}>
                     {groupedSessions.map((group) => {
                         const dateKey = group.date.toISOString();
                         const isExpanded = !!expandedDates[dateKey];
@@ -107,7 +107,7 @@ export default function History() {
                                     gap: 'var(--spacing-sm)',
                                     marginBottom: isExpanded ? 'var(--spacing-md)' : 0,
                                     paddingBottom: 'var(--spacing-sm)',
-                                    padding: 'var(--spacing-md)',
+                                    padding: 'var(--spacing-sm) var(--spacing-md)',
                                     borderBottom: '1px solid var(--border)',
                                     background: 'var(--surface-1)',
                                     border: '1px solid var(--border)',

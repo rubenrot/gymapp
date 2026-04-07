@@ -11,40 +11,38 @@ export default function WorkoutList({ onSelectWorkout }) {
     const [blockCounts, setBlockCounts] = useState({});
     const [pausedSession, setPausedSession] = useState(null);
 
-    async function loadWorkouts() {
-        const workoutList = await getWorkouts();
-        setWorkouts(workoutList);
-
-        // Load last session (with exercises) for each workout
-        const sessions = {};
-        const blocks = {};
-        for (const workout of workoutList) {
-            const workoutSessions = await getSessionsByWorkout(workout.id, 10);
-            // Find the first session that actually has sets recorded
-            for (const session of workoutSessions) {
-                const sets = await getSetsBySession(session.id);
-                if (sets.length > 0) {
-                    sessions[workout.id] = session;
-                    break;
-                }
-            }
-            // Count unique blocks per workout
-            const exercises = await getExercisesByWorkout(workout.id);
-            const uniqueBlocks = new Set(exercises.map(e => e.block || '__no_block__'));
-            blocks[workout.id] = uniqueBlocks.size;
-        }
-        setLastSessions(sessions);
-        setBlockCounts(blocks);
-    }
-
-    function loadPausedSession() {
-        const saved = getSavedSession();
-        setPausedSession(saved);
-    }
 
     useEffect(() => {
-        loadWorkouts();
-        loadPausedSession();
+        async function init() {
+            const workoutList = await getWorkouts();
+            setWorkouts(workoutList);
+
+            // Load last session (with exercises) for each workout
+            const sessions = {};
+            const blocks = {};
+            for (const workout of workoutList) {
+                const workoutSessions = await getSessionsByWorkout(workout.id, 10);
+                // Find the first session that actually has sets recorded
+                for (const session of workoutSessions) {
+                    const sets = await getSetsBySession(session.id);
+                    if (sets.length > 0) {
+                        sessions[workout.id] = session;
+                        break;
+                    }
+                }
+                // Count unique blocks per workout
+                const exercises = await getExercisesByWorkout(workout.id);
+                const uniqueBlocks = new Set(exercises.map(e => e.block || '__no_block__'));
+                blocks[workout.id] = uniqueBlocks.size;
+            }
+            setLastSessions(sessions);
+            setBlockCounts(blocks);
+
+            // Load paused session
+            const saved = getSavedSession();
+            setPausedSession(saved);
+        }
+        init();
     }, []);
 
     function handleContinueSession() {

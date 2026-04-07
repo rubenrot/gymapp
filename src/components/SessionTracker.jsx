@@ -235,6 +235,20 @@ export default function SessionTracker({ workout, onClose }) {
         }
     }
 
+    // Mark set as done AND start rest timer in one action
+    function handleSetDoneWithRest(seconds) {
+        const exercise = exercises[currentExerciseIndex];
+        const totalSets = parseInt(exercise.sets.match(/\d+/)[0]);
+
+        if (currentSetNumber < totalSets) {
+            setExercisePhase('executing');
+            setTimerDuration(seconds);
+            setShowTimer(true);
+        } else {
+            setExercisePhase('rpe');
+        }
+    }
+
     // Called when RestTimer completes - move to next set directly
     function handleRestTimerComplete() {
         setShowTimer(false);
@@ -883,10 +897,41 @@ export default function SessionTracker({ workout, onClose }) {
                         <p style={{
                             fontSize: '1.125rem',
                             color: 'var(--text-secondary)',
-                            marginBottom: 'var(--spacing-md)'
+                            marginBottom: 'var(--spacing-sm)'
                         }}>
                             Serie {currentSetNumber} / {totalSets}
                         </p>
+
+                        {/* Quick rest: mark set done + start timer */}
+                        {currentSetNumber < totalSets && (
+                            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(4, 1fr)',
+                                    gap: 'var(--spacing-sm)'
+                                }}>
+                                    {[
+                                        { label: '30s', seconds: 30 },
+                                        { label: '1 min', seconds: 60 },
+                                        { label: '90s', seconds: 90 },
+                                        { label: '2 min', seconds: 120 }
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.seconds}
+                                            onClick={() => handleSetDoneWithRest(opt.seconds)}
+                                            className="btn btn-primary"
+                                            style={{
+                                                padding: '6px 4px',
+                                                fontSize: '0.8rem',
+                                                fontWeight: 700
+                                            }}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Current set weight & reps – tap to edit */}
                         <div
@@ -971,12 +1016,13 @@ export default function SessionTracker({ workout, onClose }) {
 
                         <button
                             onClick={handleSetDone}
-                            className="btn btn-success btn-lg"
-                            style={{ width: '100%', fontSize: '1.125rem' }}
+                            className="btn btn-success"
+                            style={{ width: '100%', fontSize: '1rem' }}
                         >
-                            <Check size={24} />
-                            ✅ Serie hecha
+                            <Check size={20} />
+                            Serie hecha
                         </button>
+
 
                         {currentSetNumber < totalSets && (
                             <button
