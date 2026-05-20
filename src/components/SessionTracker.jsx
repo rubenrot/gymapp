@@ -567,7 +567,7 @@ export default function SessionTracker({ workout, onClose }) {
                     padding: '12px 0'
                 }}>
                     {(() => {
-                        const exerciseGifUrl = getExerciseGifUrl(currentExercise.name);
+                        const exerciseGifUrl = currentExercise.gifUrl || getExerciseGifUrl(currentExercise.name);
 
                         if (exerciseGifUrl && !gifError) {
                             return (

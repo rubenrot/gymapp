@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2, X, Dumbbell, History, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Play, Clock, Repeat, TrendingUp, Plus, Pencil, Trash2, X, Dumbbell, History, ChevronDown, RefreshCw } from 'lucide-react';
 import { getExercisesByWorkout, getSetsByExercise, addExercise, updateExercise, deleteExercise } from '../db/database';
 import ExerciseModal from './ExerciseModal';
+import ExercisePickerModal from './ExercisePickerModal';
 import AppModal from './AppModal';
 import { getExerciseGifUrl } from '../data/exerciseImages';
 
@@ -16,6 +17,8 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
     const [detailHistory, setDetailHistory] = useState([]);
     const [gifError, setGifError] = useState(false);
     const [collapsedBlocks, setCollapsedBlocks] = useState({});
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const [swapTarget, setSwapTarget] = useState(null);
 
     // Colapsar todos los bloques por defecto al cargar ejercicios
     useEffect(() => {
@@ -96,6 +99,28 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
         } catch (error) {
             console.error('Error saving exercise:', error);
             setErrorMsg('Error al guardar el ejercicio');
+        }
+    };
+
+    const handleSwapClick = (exercise) => {
+        setSwapTarget(exercise);
+        setIsPickerOpen(true);
+    };
+
+    const handlePickerSelect = async (selectedFromLibrary) => {
+        if (!swapTarget) return;
+        try {
+            await updateExercise(swapTarget.id, {
+                name: selectedFromLibrary.name,
+                exerciseDbId: selectedFromLibrary.exerciseDbId || selectedFromLibrary.slug || 'custom',
+                gifUrl: selectedFromLibrary.gifUrl || ''
+            });
+            setIsPickerOpen(false);
+            setSwapTarget(null);
+            loadExercises();
+        } catch (error) {
+            console.error('Error swapping exercise:', error);
+            setErrorMsg('Error al cambiar el ejercicio');
         }
     };
 
@@ -218,6 +243,32 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                         <Pencil size={14} />
                                     </button>
 
+                                    {/* Swap/Replace Button – middle right */}
+                                    <button
+                                        onClick={() => handleSwapClick(exercise)}
+                                        className="btn-icon"
+                                        title="Cambiar ejercicio"
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            right: 'var(--spacing-sm)',
+                                            transform: 'translateY(-50%)',
+                                            width: '28px',
+                                            height: '28px',
+                                            background: 'transparent',
+                                            color: 'var(--accent, #0ce6c7)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            padding: 0,
+                                            border: 'none',
+                                            opacity: 0.5,
+                                            transition: 'opacity 0.2s'
+                                        }}
+                                    >
+                                        <RefreshCw size={14} />
+                                    </button>
+
                                     {/* Delete Button – bottom right */}
                                     <button
                                         onClick={() => handleDeleteClick(exercise)}
@@ -245,31 +296,63 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                                     <div style={{
                                         display: 'flex',
                                         justifyContent: 'space-between',
-                                        alignItems: 'flex-start',
+                                        alignItems: 'center',
                                         marginBottom: 'var(--spacing-md)'
                                     }}>
                                         <div
                                             onClick={() => handleExerciseDetail(exercise)}
-                                            style={{ flex: 1, paddingRight: '40px', cursor: 'pointer' }}
+                                            style={{ flex: 1, paddingRight: '40px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-sm)' }}
                                         >
-                                            <h4 style={{
-                                                fontSize: '1.125rem',
-                                                marginBottom: 'var(--spacing-xs)',
-                                                color: 'var(--text-primary)'
-                                            }}>
-                                                {exercise.name}
-                                            </h4>
-
-                                            {exercise.notes && (
-                                                <p style={{
-                                                    fontSize: '0.875rem',
-                                                    color: 'var(--text-muted)',
-                                                    fontStyle: 'italic',
-                                                    marginBottom: 'var(--spacing-sm)'
+                                            {/* GIF Thumbnail */}
+                                            {(() => {
+                                                const gif = exercise.gifUrl || getExerciseGifUrl(exercise.name);
+                                                if (gif) {
+                                                    return (
+                                                        <div style={{
+                                                            width: '44px',
+                                                            height: '44px',
+                                                            borderRadius: 'var(--radius-md)',
+                                                            overflow: 'hidden',
+                                                            background: '#fff',
+                                                            border: '1px solid var(--border)',
+                                                            flexShrink: 0,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            marginTop: '2px'
+                                                        }}>
+                                                            <img
+                                                                src={gif}
+                                                                alt=""
+                                                                loading="lazy"
+                                                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                                onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                                                            />
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
+                                            <div style={{ minWidth: 0 }}>
+                                                <h4 style={{
+                                                    fontSize: '1.125rem',
+                                                    margin: 0,
+                                                    color: 'var(--text-primary)'
                                                 }}>
-                                                    {exercise.notes}
-                                                </p>
-                                            )}
+                                                    {exercise.name}
+                                                </h4>
+
+                                                {exercise.notes && (
+                                                    <p style={{
+                                                        fontSize: '0.875rem',
+                                                        color: 'var(--text-muted)',
+                                                        fontStyle: 'italic',
+                                                        margin: '2px 0 0 0'
+                                                    }}>
+                                                        {exercise.notes}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -480,6 +563,14 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
                 hideCancel
             />
 
+            {/* Exercise Picker Modal (for swapping) */}
+            <ExercisePickerModal
+                isOpen={isPickerOpen}
+                onClose={() => { setIsPickerOpen(false); setSwapTarget(null); }}
+                onSelect={handlePickerSelect}
+                currentExerciseName={swapTarget?.name || ''}
+            />
+
             {/* Exercise Detail Modal */}
             {detailExercise && (
                 <div
@@ -555,7 +646,7 @@ export default function WorkoutDetail({ workout, onBack, onStartSession }) {
 
                         {/* Exercise GIF / Image */}
                         {(() => {
-                            const gifUrl = getExerciseGifUrl(detailExercise.name);
+                            const gifUrl = detailExercise.gifUrl || getExerciseGifUrl(detailExercise.name);
                             if (gifUrl && !gifError) {
                                 return (
                                     <div style={{

@@ -8,6 +8,7 @@ export default function ExerciseModal({ isOpen, onClose, onSave, initialData }) 
         reps: '8-12',
         rir: '2',
         rest: '90s',
+        block: '',
         notes: ''
     });
 
@@ -19,6 +20,7 @@ export default function ExerciseModal({ isOpen, onClose, onSave, initialData }) 
                 reps: initialData.reps || '8-12',
                 rir: initialData.rir || '2',
                 rest: initialData.rest || '90s',
+                block: initialData.block || '',
                 notes: initialData.notes || ''
             });
         } else {
@@ -29,6 +31,7 @@ export default function ExerciseModal({ isOpen, onClose, onSave, initialData }) 
                 reps: '8-12',
                 rir: '2',
                 rest: '90s',
+                block: '',
                 notes: ''
             });
         }
@@ -130,6 +133,18 @@ export default function ExerciseModal({ isOpen, onClose, onSave, initialData }) 
                                 placeholder="90s"
                             />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Bloque (Opcional)</label>
+                        <input
+                            type="text"
+                            name="block"
+                            value={formData.block}
+                            onChange={handleChange}
+                            className="input"
+                            placeholder="Ej: Pecho + Espalda"
+                        />
                     </div>
 
                     <div className="form-group">
