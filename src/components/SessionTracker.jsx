@@ -7,7 +7,10 @@ import {
     updateSession,
     deleteSession,
     getSetsByExercise,
-    getExerciseHistory
+    getExerciseHistory,
+    saveActiveWorkoutSession,
+    markActiveSessionCompleted,
+    markActiveSessionDiscarded
 } from '../db/database';
 import RestTimer from './RestTimer';
 import NotesModal from './NotesModal';
@@ -32,7 +35,7 @@ export default function SessionTracker({ workout, onClose }) {
     const [showNotes, setShowNotes] = useState(false);
     const [lastWeights, setLastWeights] = useState({});
     const [lastSessionData, setLastSessionData] = useState({}); // { exerciseId: [{ weight, reps }, ...] }
-    const [startTime] = useState(Date.now());
+    const [startTime, setStartTime] = useState(Date.now());
     const [gifError, setGifError] = useState(false);
     const [showCompleteModal, setShowCompleteModal] = useState(false);
     const [sessionDuration, setSessionDuration] = useState(0);
@@ -44,11 +47,71 @@ export default function SessionTracker({ workout, onClose }) {
     const [exerciseHistory, setExerciseHistory] = useState([]);
     const initRef = useRef(false);
 
+    // ── Crash-recovery autosave ────────────────────────────────────────────
+    const activeSessionDbIdRef = useRef(null); // IndexedDB id of activeWorkoutSessions row
+    const autosaveTimerRef = useRef(null);
+    const saveNowRef = useRef(null); // always points to the latest save closure
+
     useEffect(() => {
         if (initRef.current) return;
         initRef.current = true;
         initSession();
     }, [workout]);
+
+    // ── Keep saveNowRef always pointing to the latest closure ──────────────
+    // (runs after every render, so all state captured is fresh)
+    useEffect(() => {
+        saveNowRef.current = async () => {
+            if (!sessionId) return;
+            try {
+                const id = await saveActiveWorkoutSession({
+                    workoutId: workout.id,
+                    workoutName: workout.name,
+                    sessionId,
+                    currentExerciseIndex,
+                    currentSetNumber,
+                    weight,
+                    rpe,
+                    exercisePhase,
+                    sessionSets,
+                    setWeights,
+                    setRepsMap,
+                    startTime,
+                    status: 'active'
+                });
+                if (activeSessionDbIdRef.current === null) {
+                    activeSessionDbIdRef.current = id;
+                }
+            } catch (err) {
+                console.error('[GorilApp] Error autosaving session:', err);
+            }
+        };
+    }); // intentionally no deps – must capture latest state every render
+
+    // ── One-time event listeners for immediate save ─────────────────────────
+    useEffect(() => {
+        const flush = () => {
+            clearTimeout(autosaveTimerRef.current);
+            saveNowRef.current?.();
+        };
+        const handleVisChange = () => { if (document.visibilityState === 'hidden') flush(); };
+        document.addEventListener('visibilitychange', handleVisChange);
+        window.addEventListener('beforeunload', flush);
+        document.addEventListener('pause', flush); // Capacitor background
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisChange);
+            window.removeEventListener('beforeunload', flush);
+            document.removeEventListener('pause', flush);
+        };
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // ── Debounced autosave (500 ms) whenever workout state changes ──────────
+    useEffect(() => {
+        if (!sessionId) return;
+        clearTimeout(autosaveTimerRef.current);
+        autosaveTimerRef.current = setTimeout(() => saveNowRef.current?.(), 500);
+    }, [sessionId, currentExerciseIndex, currentSetNumber, weight, rpe,
+        exercisePhase, sessionSets, setWeights, setRepsMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Reset image error states when exercise changes
     useEffect(() => {
@@ -114,7 +177,13 @@ export default function SessionTracker({ workout, onClose }) {
             setSetWeights(saved.setWeights || {});
             setSetRepsMap(saved.setRepsMap || {});
 
-            // Clear the saved session from localStorage
+            // Restore original start time so duration is accurate
+            if (saved.startTime) setStartTime(saved.startTime);
+
+            // Remember which IndexedDB activeWorkoutSessions row to update
+            if (saved.id) activeSessionDbIdRef.current = saved.id;
+
+            // Clear the saved session from localStorage (legacy)
             clearSession();
         } else {
             // New session
@@ -166,22 +235,6 @@ export default function SessionTracker({ workout, onClose }) {
         setRpe(null); // Reset RPE for new exercise
     }
 
-    function parseRestTime(restString) {
-        if (!restString) return 60;
-        // Match patterns like "90-120s", "75-90s", "60-75s", "90s", "2 min", "3-4 min"
-        const rangeMatch = restString.match(/(\d+)\s*[-–]\s*(\d+)\s*s/i);
-        if (rangeMatch) {
-            // Use the average of the range in seconds
-            return Math.round((parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2);
-        }
-        const singleSecMatch = restString.match(/(\d+)\s*s/i);
-        if (singleSecMatch) return parseInt(singleSecMatch[1]);
-        const minMatch = restString.match(/(\d+)\s*min/i);
-        if (minMatch) return parseInt(minMatch[1]) * 60;
-        // Fallback: extract first number
-        const num = restString.match(/(\d+)/);
-        return num ? parseInt(num[1]) : 60;
-    }
 
     // NEW WORKFLOW: Start all 5 sets for current exercise
     function startExerciseSets() {
@@ -315,9 +368,16 @@ export default function SessionTracker({ workout, onClose }) {
         // Check if any sets were actually recorded
         const setsRecorded = Object.keys(sessionSets).length > 0;
 
+        // Cancel any pending debounced save
+        clearTimeout(autosaveTimerRef.current);
+
         if (!setsRecorded) {
             // No exercises done – delete the empty session
             await deleteSession(sessionId);
+            // Discard the active session record
+            if (activeSessionDbIdRef.current !== null) {
+                await markActiveSessionDiscarded(activeSessionDbIdRef.current);
+            }
             clearSession();
             onClose();
             return;
@@ -325,6 +385,11 @@ export default function SessionTracker({ workout, onClose }) {
 
         const duration = Math.floor((Date.now() - startTime) / 1000 / 60); // minutes
         await updateSession(sessionId, { duration });
+
+        // Mark the active session as completed
+        if (activeSessionDbIdRef.current !== null) {
+            await markActiveSessionCompleted(activeSessionDbIdRef.current);
+        }
 
         // Clear saved session
         clearSession();
@@ -335,7 +400,11 @@ export default function SessionTracker({ workout, onClose }) {
     }
 
     function handlePauseSession() {
-        // Save current state
+        // Cancel debounced save and flush immediately
+        clearTimeout(autosaveTimerRef.current);
+        saveNowRef.current?.(); // persist to IndexedDB right now
+
+        // Also save to localStorage for backward-compat banner in WorkoutList
         const sessionData = {
             workoutId: workout.id,
             workoutName: workout.name,

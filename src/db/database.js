@@ -20,6 +20,17 @@ db.version(4).stores({
   bodyMetrics: '++id, date'
 });
 
+// Version 5: active workout session persistence for crash recovery
+db.version(5).stores({
+  workouts: '++id, name, day, order',
+  exercises: '++id, workoutId, name, sets, reps, rir, rest, order, exerciseDbId, gifUrl',
+  sessions: '++id, workoutId, date, duration, notes',
+  sets: '++id, sessionId, exerciseId, setNumber, weight, reps, rir, rpe, date',
+  notes: '++id, exerciseId, note, date',
+  bodyMetrics: '++id, date',
+  activeWorkoutSessions: '++id, status, startedAt, updatedAt'
+});
+
 function toMetricDate(inputDate) {
   if (!inputDate) return new Date().toISOString().slice(0, 10);
   if (typeof inputDate === 'string') return inputDate.slice(0, 10);
@@ -342,4 +353,63 @@ export async function getLatestBodyMetric() {
 
 export async function deleteBodyMetric(id) {
   return await db.bodyMetrics.delete(id);
+}
+
+// ─── Active Workout Session Persistence ────────────────────────────────────
+// Used for crash recovery: saves the live session state continuously so the
+// user can resume after an app close / crash / background kill.
+
+/**
+ * Upsert the single active workout session snapshot.
+ * Returns the IndexedDB id of the record.
+ */
+export async function saveActiveWorkoutSession(data) {
+  const now = new Date().toISOString();
+  const existing = await db.activeWorkoutSessions
+    .where('status').equals('active')
+    .first();
+
+  if (existing) {
+    await db.activeWorkoutSessions.update(existing.id, {
+      ...data,
+      updatedAt: now,
+      status: 'active'
+    });
+    return existing.id;
+  } else {
+    return await db.activeWorkoutSessions.add({
+      ...data,
+      startedAt: data.startedAt || now,
+      updatedAt: now,
+      status: 'active'
+    });
+  }
+}
+
+/** Returns the current active workout session, or undefined if none. */
+export async function getActiveWorkoutSession() {
+  return await db.activeWorkoutSessions
+    .where('status').equals('active')
+    .first();
+}
+
+/** Mark the active session as completed (sets have been saved). */
+export async function markActiveSessionCompleted(id) {
+  return await db.activeWorkoutSessions.update(id, {
+    status: 'completed',
+    updatedAt: new Date().toISOString()
+  });
+}
+
+/** Mark the active session as discarded (user chose to discard). */
+export async function markActiveSessionDiscarded(id) {
+  return await db.activeWorkoutSessions.update(id, {
+    status: 'discarded',
+    updatedAt: new Date().toISOString()
+  });
+}
+
+/** Hard-delete an active session record. */
+export async function deleteActiveWorkoutSession(id) {
+  return await db.activeWorkoutSessions.delete(id);
 }
