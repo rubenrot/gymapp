@@ -116,16 +116,16 @@ export const workoutData = [
             },
             // Bloque 2 (volumen medio)
             {
-                name: 'Remo superior mancuerna',
+                name: 'Remo alto en polea',
                 sets: '3',
                 reps: '10-12',
                 rir: '',
                 rest: '90s',
                 order: 3,
                 block: 'Bloque 2 – Volumen medio',
-                exerciseDbId: '0338',
+                exerciseDbId: '0207',
                 gifUrl: '',
-                notes: 'Trabajo deltoide medio/posterior'
+                notes: 'Codos altos, manos a la altura de las orejas, trabajo deltoide posterior y rotadores externos'
             },
             {
                 name: 'Curl supinación cerrado barra Z',
