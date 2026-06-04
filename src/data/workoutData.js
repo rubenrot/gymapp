@@ -1,4 +1,4 @@
-﻿﻿// Workout data – Rutinas personalizadas
+﻿﻿﻿// Workout data – Rutinas personalizadas
 export const workoutData = [
     {
         name: 'Día 1 – Pecho + Espalda',
@@ -153,16 +153,16 @@ export const workoutData = [
             },
             // Bloque 3 (bombeo / control)
             {
-                name: 'Pájaros sentado mancuernas',
+                name: 'Face pull en polea',
                 sets: '3',
                 reps: '12-15',
                 rir: '',
                 rest: '60s',
                 order: 6,
                 block: 'Bloque 3 – Bombeo / Control',
-                exerciseDbId: '0187',
+                exerciseDbId: '0207',
                 gifUrl: '',
-                notes: 'Mucho control, sin balanceos, protegiendo el hombro'
+                notes: 'Codos altos, llevar las manos hacia las orejas, trabajo deltoide posterior y rotadores'
             },
             {
                 name: 'Curl concentrado mancuerna',

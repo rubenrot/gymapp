@@ -47,7 +47,7 @@ function normalizeMetric(metric) {
 
 // Initialize database with workout data
 // Bump this version every time workoutData.js changes.
-const WORKOUT_DATA_VERSION = 4;
+const WORKOUT_DATA_VERSION = 5;
 const WD_VERSION_KEY = 'workoutDataVersion';
 const EXPECTED_WORKOUT_COUNT = 4; // number of routines in workoutData.js
 
